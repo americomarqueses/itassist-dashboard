@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Settings - IT Assist Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="IT Assist Admin Dashboard - System settings and configuration"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Brand + shared tokens */
+        --aa-red: #ee1c25;
+        --aa-red-dark: #c0151d;
+        --aa-accent-amber: #f97316;
+        --aa-accent-green: #16a34a;
+        --aa-accent-blue: #2563eb;
+        --radius-lg: 10px;
+        --radius-md: 6px;
+        --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.12);
+        --shadow-subtle: 0 12px 30px rgba(15, 23, 42, 0.08);
+
+        /* Light theme (default) */
+        --aa-bg: #f3f4f6;
+        --aa-bg-elevated: #ffffff;
+        --aa-bg-card: #ffffff;
+        --aa-border-subtle: rgba(15, 23, 42, 0.08);
+        --aa-text: #020617;
+        --aa-text-muted: #6b7280;
+        --aa-surface-gradient: radial-gradient(circle at top, #ffffff, #e5e7eb 55%);
+        --aa-shell-gradient: linear-gradient(
+          135deg,
+          rgba(239, 68, 68, 0.06),
+          rgba(241, 245, 249, 0.96)
+        );
+        --aa-sidebar-bg: linear-gradient(180deg, #ffffff, #f9fafb);
+        --aa-sidebar-border: rgba(148, 163, 184, 0.3);
+      }
+
+      :root[data-theme="dark"] {
+        --aa-bg: #050608;
+        --aa-bg-elevated: #0e1117;
+        --aa-bg-card: #111827;
+        --aa-border-subtle: rgba(255, 255, 255, 0.06);
+        --aa-text: #f9fafb;
+        --aa-text-muted: #9ca3af;
+        --aa-surface-gradient: radial-gradient(
+          circle at top,
+          #111827,
+          #020617 55%
+        );
+        --aa-shell-gradient: linear-gradient(
+          135deg,
+          rgba(239, 68, 68, 0.08),
+          rgba(15, 23, 42, 0.96)
+        );
+        --aa-sidebar-bg: linear-gradient(
+          180deg,
+          rgba(15, 15, 18, 0.98),
+          rgba(10, 10, 12, 0.96)
+        );
+        --aa-sidebar-border: rgba(255, 255, 255, 0.04);
+        --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.45);
+        --shadow-subtle: 0 12px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: var(--aa-surface-gradient);
+        color: var(--aa-text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+        background: var(--aa-shell-gradient);
+        transition: grid-template-columns 0.3s ease;
+      }
+
+      .app-shell.sidebar-hidden {
+        grid-template-columns: 60px minmax(0, 1fr);
+      }
+
+      .app-shell.sidebar-hidden .sidebar {
+        padding: 20px 8px;
+        align-items: center;
+      }
+
+      .app-shell.sidebar-hidden .brand {
+        justify-content: center;
+        margin-bottom: 0;
+      }
+
+      .app-shell.sidebar-hidden .brand > div:first-child {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .brand-text {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .brand-logo {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .nav-section {
+        margin-top: 20px;
+      }
+
+      .app-shell.sidebar-hidden .nav-section-label {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .nav-item-label {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .nav-item {
+        justify-content: center;
+        padding: 9px;
+        gap: 0;
+      }
+
+      .app-shell.sidebar-hidden .nav-footer {
+        margin-top: auto;
+        padding-top: 18px;
+        border-top: 1px dashed rgba(148, 163, 184, 0.4);
+      }
+
+      .app-shell.sidebar-hidden .theme-toggle {
+        justify-content: center;
+        padding: 8px;
+        width: auto;
+      }
+
+      .app-shell.sidebar-hidden .theme-toggle #themeToggleLabel {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .sidebar-user-info {
+        display: none;
+      }
+
+      .app-shell.sidebar-hidden .sidebar-user {
+        justify-content: center;
+        padding: 6px;
+      }
+
+      .app-shell.sidebar-hidden .sidebar-toggle {
+        margin: 0 auto;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        backdrop-filter: blur(22px);
+        background: var(--aa-sidebar-bg);
+        border-right: 1px solid var(--aa-sidebar-border);
+        padding: 20px 18px;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        overflow: visible;
+        position: relative;
+        z-index: 100;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 32px;
+      }
+
+      .brand-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 16px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .brand-logo img {
+        width: 120%;
+        height: 120%;
+        object-fit: contain;
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        font-size: 0.92rem;
+        text-transform: uppercase;
+      }
+
+      .brand-subtitle {
+        font-size: 0.75rem;
+        color: var(--aa-text-muted);
+      }
+
+      .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .nav-item {
+        border-radius: 6px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--aa-text-muted);
+        font-size: 0.85rem;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.18s ease, color 0.18s ease,
+          transform 0.1s ease;
+        text-decoration: none;
+      }
+
+      .nav-item-primary {
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+        color: #fef2f2;
+        box-shadow: 0 16px 35px rgba(248, 113, 113, 0.4);
+      }
+
+      .nav-item-primary::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        border-radius: inherit;
+        border: 1px solid rgba(248, 250, 252, 0.12);
+        pointer-events: none;
+      }
+
+      .nav-item-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.32);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.86rem;
+      }
+
+      .nav-item-label {
+        flex: 1;
+      }
+
+      .nav-item:hover {
+        background: rgba(15, 23, 42, 0.06);
+        color: var(--aa-text);
+        transform: translateY(-1px);
+      }
+
+      .nav-footer {
+        margin-top: auto;
+        padding-top: 18px;
+        border-top: 1px dashed rgba(148, 163, 184, 0.4);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+        overflow: visible;
+      }
+
+      .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: rgba(148, 163, 184, 0.08);
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .sidebar-user:hover {
+        background: rgba(148, 163, 184, 0.12);
+      }
+
+      .sidebar-user-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: radial-gradient(circle at top left, #fb923c, #b91c1c);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+
+      .sidebar-user-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-user-name {
+        font-size: 0.78rem;
+        font-weight: 500;
+      }
+
+      .sidebar-user-role {
+        font-size: 0.7rem;
+        color: var(--aa-text-muted);
+      }
+
+      .sidebar-user-logout {
+        position: fixed;
+        bottom: 20px;
+        left: calc(260px + 8px);
+        width: 140px;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transform: translateX(-10px);
+        pointer-events: none;
+        z-index: 999999;
+        cursor: pointer;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .app-shell.sidebar-hidden .sidebar-user-logout {
+        left: calc(60px + 8px);
+      }
+
+      .sidebar-user:hover .sidebar-user-logout,
+      .sidebar-user.active .sidebar-user-logout {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+
+      .sidebar-user-logout:hover {
+        background: radial-gradient(circle at top left, #dc2626, #991b1b);
+        border-color: rgba(239, 68, 68, 0.5);
+        transform: translateX(2px);
+      }
+
+      .sidebar-user-logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 500;
+        width: 100%;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      /* Main */
+      .main {
+        padding: 18px 22px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .page-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      .page-subtitle {
+        font-size: 0.85rem;
+        color: var(--aa-text-muted);
+      }
+
+      /* Card */
+      .card {
+        background: var(--aa-bg-card);
+        border-radius: var(--radius-lg);
+        padding: 16px 16px 14px;
+        border: 1px solid var(--aa-border-subtle);
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .card-subtitle {
+        font-size: 0.78rem;
+        color: var(--aa-text-muted);
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .setting-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        background: rgba(148, 163, 184, 0.05);
+        border: 1px solid var(--aa-border-subtle);
+      }
+
+      .setting-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--aa-text);
+      }
+
+      .setting-description {
+        font-size: 0.72rem;
+        color: var(--aa-text-muted);
+      }
+
+      .setting-control {
+        margin-top: 4px;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(148, 163, 184, 0.3);
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--aa-border-subtle);
+        background: var(--aa-bg-card);
+        color: var(--aa-text);
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .input-field:focus {
+        border-color: var(--aa-red);
+      }
+
+      .select-field {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--aa-border-subtle);
+        background: var(--aa-bg-card);
+        color: var(--aa-text);
+        font-size: 0.85rem;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+      }
+
+      .select-field:focus {
+        border-color: var(--aa-red);
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-primary {
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+        color: #fef2f2;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--aa-text);
+        border: 1px solid var(--aa-border-subtle);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(148, 163, 184, 0.15);
+      }
+
+      .section-divider {
+        height: 1px;
+        background: var(--aa-border-subtle);
+        margin: 20px 0;
+      }
+
+      /* Sidebar toggle button */
+      .sidebar-toggle {
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.08);
+        padding: 6px 8px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--aa-text);
+        transition: all 0.18s ease;
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-toggle:hover {
+        background: rgba(15, 23, 42, 0.1);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: scale(1.05);
+      }
+
+      .sidebar-toggle-icon {
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1;
+      }
+
+      :root[data-theme="dark"] .sidebar-toggle {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: rgba(148, 163, 184, 0.3);
+        color: var(--aa-text);
+      }
+
+      :root[data-theme="dark"] .sidebar-toggle:hover {
+        background: rgba(31, 41, 55, 0.6);
+        border-color: rgba(148, 163, 184, 0.5);
+      }
+
+      /* Theme toggle button */
+      .theme-toggle {
+        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.08);
+        padding: 8px 12px;
+        font-size: 0.78rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        cursor: pointer;
+        color: var(--aa-text);
+        width: 100%;
+        transition: all 0.18s ease;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(15, 23, 42, 0.06);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: translateY(-1px);
+      }
+
+      .theme-toggle-icon {
+        font-size: 0.9rem;
+      }
+
+      :root[data-theme="dark"] .theme-toggle {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: rgba(148, 163, 184, 0.3);
+        color: var(--aa-text);
+      }
+
+      :root[data-theme="dark"] .theme-toggle:hover {
+        background: rgba(31, 41, 55, 0.6);
+        border-color: rgba(148, 163, 184, 0.5);
+      }
+
+      /* Dark mode overrides */
+      :root[data-theme="dark"] body {
+        background: radial-gradient(circle at top, #111827, #020617 55%);
+      }
+
+      :root[data-theme="dark"] .card {
+        background: radial-gradient(circle at top left, #111827, #020617);
+      }
+
+      :root[data-theme="dark"] .setting-item {
+        background: rgba(15, 23, 42, 0.5);
+        border-color: rgba(31, 41, 55, 0.8);
+      }
+
+      :root[data-theme="dark"] .input-field,
+      :root[data-theme="dark"] .select-field {
+        background: rgba(15, 23, 42, 0.8);
+        border-color: rgba(31, 41, 55, 0.8);
+        color: var(--aa-text);
+      }
+
+      :root[data-theme="dark"] .sidebar-user {
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      /* Responsive */
+      @media (max-width: 1080px) {
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr) !important;
+        }
+
+        .app-shell .sidebar {
+          display: none;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .settings-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+            <div class="brand-logo">
+              <img src="https://i.imgur.com/tvZMJ0I.png" alt="AirAsia logo" />
+            </div>
+            <div class="brand-text">
+              <div class="brand-title">IT Assist</div>
+              <div class="brand-subtitle">Admin Dashboard</div>
+            </div>
+          </div>
+          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Toggle sidebar">
+            <span id="sidebarToggleIcon">☰</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <ul class="nav-list">
+            <li>
+              <a href="dashboard.html" class="nav-item">
+                <div class="nav-item-icon">📊</div>
+                <div class="nav-item-label">Dashboard</div>
+              </a>
+            </li>
+            <li>
+              <a href="conversations.html" class="nav-item">
+                <div class="nav-item-icon">💬</div>
+                <div class="nav-item-label">Conversations</div>
+              </a>
+            </li>
+            <li>
+              <a href="admin.html" class="nav-item nav-item-primary">
+                <div class="nav-item-icon">⚙️</div>
+                <div class="nav-item-label">Admin Settings</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-footer">
+          <button class="theme-toggle" id="themeToggle" type="button">
+            <span class="theme-toggle-icon" aria-hidden="true">☀️</span>
+            <span id="themeToggleLabel">Light Theme</span>
+          </button>
+
+          <div class="sidebar-user" id="sidebarUser">
+            <div class="sidebar-user-avatar" id="userAvatar">AA</div>
+            <div class="sidebar-user-info">
+              <div class="sidebar-user-name" id="userName">airasia.itassist</div>
+              <div class="sidebar-user-role" id="userRole">Platform Owner</div>
+            </div>
+            <div class="sidebar-user-logout" onclick="event.stopPropagation()">
+              <button class="sidebar-user-logout-btn" onclick="handleLogout()">
+                <span>→</span>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="top-bar">
+          <div class="title-block">
+            <div class="page-title">Admin Settings</div>
+            <div class="page-subtitle">
+              Configure system settings and manage platform preferences
+            </div>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">System Configuration</div>
+              <div class="card-subtitle">
+                Core system settings and operational parameters
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="setting-item">
+              <div class="setting-label">Enable Auto-Response</div>
+              <div class="setting-description">
+                Automatically respond to common queries without human intervention
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Maintenance Mode</div>
+              <div class="setting-description">
+                Temporarily disable chatbot services for system maintenance
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Response Timeout (seconds)</div>
+              <div class="setting-description">
+                Maximum time to wait for chatbot response before escalation
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="30" min="5" max="120" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Max Concurrent Sessions</div>
+              <div class="setting-description">
+                Maximum number of simultaneous chatbot conversations
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="1000" min="100" max="10000" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Default Language</div>
+              <div class="setting-description">
+                Primary language for chatbot interactions
+              </div>
+              <div class="setting-control">
+                <select class="select-field">
+                  <option value="en">English</option>
+                  <option value="ms">Bahasa Malaysia</option>
+                  <option value="zh">Chinese</option>
+                  <option value="th">Thai</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Log Retention (days)</div>
+              <div class="setting-description">
+                Number of days to retain conversation logs
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="90" min="7" max="365" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Notification Settings</div>
+              <div class="card-subtitle">
+                Configure alerts and notification preferences
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="setting-item">
+              <div class="setting-label">Email Notifications</div>
+              <div class="setting-description">
+                Send email alerts for escalated conversations
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">SLA Alert Threshold (%)</div>
+              <div class="setting-description">
+                Trigger alert when SLA drops below this percentage
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="95" min="80" max="100" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">High Volume Alert</div>
+              <div class="setting-description">
+                Alert when conversation volume exceeds normal levels
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Alert Email Recipients</div>
+              <div class="setting-description">
+                Comma-separated list of email addresses
+              </div>
+              <div class="setting-control">
+                <input type="text" class="input-field" placeholder="admin@airasia.com, support@airasia.com" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Integration Settings</div>
+              <div class="card-subtitle">
+                External service connections and API configurations
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="setting-item">
+              <div class="setting-label">Workvivo API Endpoint</div>
+              <div class="setting-description">
+                Base URL for Workvivo API integration
+              </div>
+              <div class="setting-control">
+                <input type="text" class="input-field" value="https://api.workvivo.com/v1" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">API Rate Limit (requests/min)</div>
+              <div class="setting-description">
+                Maximum API requests per minute
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="100" min="10" max="1000" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Enable Webhook</div>
+              <div class="setting-description">
+                Send webhook notifications for conversation events
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Webhook URL</div>
+              <div class="setting-description">
+                Endpoint URL for webhook notifications
+              </div>
+              <div class="setting-control">
+                <input type="text" class="input-field" placeholder="https://example.com/webhook" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Security Settings</div>
+              <div class="card-subtitle">
+                Authentication and access control configurations
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="setting-item">
+              <div class="setting-label">Require Two-Factor Authentication</div>
+              <div class="setting-description">
+                Enforce 2FA for all admin users
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Session Timeout (minutes)</div>
+              <div class="setting-description">
+                Automatic logout after inactivity period
+              </div>
+              <div class="setting-control">
+                <input type="number" class="input-field" value="60" min="5" max="480" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">IP Whitelist</div>
+              <div class="setting-description">
+                Restrict admin access to specific IP addresses
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Audit Logging</div>
+              <div class="setting-description">
+                Record all administrative actions for audit purposes
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-primary">Save Changes</button>
+        </div>
+      </main>
+    </div>
+    <script>
+      // Remove unused "theme" key from localStorage (created by Tailwind CDN, not used by this app)
+      if (window.localStorage.getItem('theme')) {
+        window.localStorage.removeItem('theme');
+      }
+
+      // Authentication check and user info setup
+      (function () {
+        const isAuthenticated = sessionStorage.getItem('itAssistAuthenticated');
+        const loginMethod = sessionStorage.getItem('loginMethod');
+        const dashboardMode = sessionStorage.getItem('dashboardMode');
+        
+        // Admin page requires Google SSO login - redirect if not authorized
+        if (dashboardMode === 'true' || loginMethod !== 'google_sso') {
+          window.location.href = 'dashboard.html';
+          return;
+        }
+        
+        // Redirect to login if not authenticated
+        if (isAuthenticated !== 'true') {
+          window.location.href = 'login.html';
+          return;
+        }
+        
+        // Update user info from sessionStorage
+        const username = sessionStorage.getItem('username') || 'airasia.itassist';
+        const userName = sessionStorage.getItem('userName') || 'airasia.itassist';
+        const userRole = sessionStorage.getItem('userRole') || 'Platform Owner';
+        
+        // Update sidebar user info
+        const userNameEl = document.getElementById('userName');
+        const userRoleEl = document.getElementById('userRole');
+        const userAvatarEl = document.getElementById('userAvatar');
+        
+        if (userNameEl) userNameEl.textContent = userName;
+        if (userRoleEl) userRoleEl.textContent = userRole;
+        if (userAvatarEl) {
+          // Get initials from username
+          const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'AA';
+          userAvatarEl.textContent = initials;
+        }
+      })();
+
+      // Logout handler
+      function handleLogout() {
+        // Clear all session data
+        sessionStorage.clear();
+        // Redirect to login
+        window.location.href = 'login.html';
+      }
+
+      // Sidebar user click handler for logout dropdown
+      (function () {
+        const sidebarUser = document.getElementById('sidebarUser');
+        const logoutButton = document.querySelector('.sidebar-user-logout');
+        const appShell = document.querySelector('.app-shell');
+        
+        function updateLogoutPosition() {
+          if (logoutButton && sidebarUser) {
+            const userRect = sidebarUser.getBoundingClientRect();
+            const isHidden = appShell && appShell.classList.contains('sidebar-hidden');
+            const sidebarWidth = isHidden ? 60 : 260;
+            
+            logoutButton.style.left = (sidebarWidth + 8) + 'px';
+            logoutButton.style.bottom = (window.innerHeight - userRect.bottom + 20) + 'px';
+          }
+        }
+        
+        if (sidebarUser) {
+          sidebarUser.addEventListener('click', function(e) {
+            // Toggle active class on click
+            this.classList.toggle('active');
+            updateLogoutPosition();
+            // Close if clicking outside
+            document.addEventListener('click', function closeLogout(e) {
+              if (!sidebarUser.contains(e.target) && !logoutButton.contains(e.target)) {
+                sidebarUser.classList.remove('active');
+                document.removeEventListener('click', closeLogout);
+              }
+            });
+          });
+        }
+        
+        // Update position on hover
+        if (sidebarUser) {
+          sidebarUser.addEventListener('mouseenter', updateLogoutPosition);
+        }
+        
+        // Update position when sidebar is toggled
+        if (appShell) {
+          const observer = new MutationObserver(updateLogoutPosition);
+          observer.observe(appShell, { attributes: true, attributeFilter: ['class'] });
+        }
+      })();
+
+      // Sidebar toggle functionality
+      (function () {
+        const appShell = document.querySelector(".app-shell");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+        const storedSidebarState = window.localStorage.getItem("itAssistSidebar");
+
+        // Initialize sidebar state - expanded by default
+        appShell.classList.remove("sidebar-hidden");
+        if (storedSidebarState === "hidden") {
+          appShell.classList.add("sidebar-hidden");
+        }
+
+        sidebarToggle.addEventListener("click", () => {
+          const isHidden = appShell.classList.contains("sidebar-hidden");
+          if (isHidden) {
+            appShell.classList.remove("sidebar-hidden");
+            window.localStorage.setItem("itAssistSidebar", "visible");
+          } else {
+            appShell.classList.add("sidebar-hidden");
+            window.localStorage.setItem("itAssistSidebar", "hidden");
+          }
+        });
+      })();
+
+      // Theme toggle functionality
+      (function () {
+        const root = document.documentElement;
+        const toggle = document.getElementById("themeToggle");
+        const label = document.getElementById("themeToggleLabel");
+        const stored = window.localStorage.getItem("itAssistTheme");
+
+        // Default to dark theme if no preference is stored
+        if (stored === "dark" || stored === "light") {
+          root.setAttribute("data-theme", stored);
+        } else {
+          root.setAttribute("data-theme", "dark");
+        }
+
+        function syncLabel() {
+          const isDark = root.getAttribute("data-theme") === "dark";
+          if (isDark) {
+            label.textContent = "Dark Theme";
+            toggle.querySelector(".theme-toggle-icon").textContent = "🌙";
+          } else {
+            label.textContent = "Light Theme";
+            toggle.querySelector(".theme-toggle-icon").textContent = "☀️";
+          }
+        }
+
+        syncLabel();
+
+        toggle.addEventListener("click", () => {
+          const current = root.getAttribute("data-theme") || "dark";
+          const next = current === "light" ? "dark" : "light";
+          root.setAttribute("data-theme", next);
+          window.localStorage.setItem("itAssistTheme", next);
+          syncLabel();
+        });
+      })();
+    </script>
+  </body>
+</html>
+
