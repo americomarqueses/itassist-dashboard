@@ -403,6 +403,26 @@
         gap: 18px;
       }
 
+      .top-bar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .datetime-display {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--aa-text-muted);
+        padding: 8px 14px;
+        border-radius: var(--radius-md);
+        background: var(--aa-bg-card);
+        border: 1px solid var(--aa-border-subtle);
+        box-shadow: var(--shadow-subtle);
+        white-space: nowrap;
+        text-align: left;
+      }
+
       .title-block {
         display: flex;
         flex-direction: column;
@@ -793,6 +813,9 @@
             <div class="page-subtitle">
               Configure system settings and manage platform preferences
             </div>
+          </div>
+          <div class="top-bar-right">
+            <div class="datetime-display" id="datetimeDisplay"></div>
           </div>
         </header>
 
@@ -1217,6 +1240,40 @@
           window.localStorage.setItem("itAssistTheme", next);
           syncLabel();
         });
+      })();
+
+      // Date and Time Display (MYT)
+      (function () {
+        const datetimeDisplay = document.getElementById('datetimeDisplay');
+        if (!datetimeDisplay) return;
+
+        function updateDateTime() {
+          const now = new Date();
+          // Convert to Malaysia Time (UTC+8)
+          const mytOffset = 8 * 60; // 8 hours in minutes
+          const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+          const mytTime = new Date(utc + (mytOffset * 60000));
+
+          // Format: 01 Dec 2025 • 11:06 AM MYT (using bullet separator for better readability)
+          const day = String(mytTime.getDate()).padStart(2, '0');
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const month = monthNames[mytTime.getMonth()];
+          const year = mytTime.getFullYear();
+          
+          let hours = mytTime.getHours();
+          const minutes = String(mytTime.getMinutes()).padStart(2, '0');
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          hours = hours % 12;
+          hours = hours ? hours : 12; // the hour '0' should be '12'
+          const hoursStr = String(hours).padStart(2, '0');
+          
+          // Using bullet separator (•) for clear visual separation between date and time
+          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes} ${ampm} MYT`;
+        }
+
+        // Update immediately and then every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
       })();
     </script>
   </body>
