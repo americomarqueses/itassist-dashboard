@@ -180,6 +180,7 @@
         z-index: 100;
       }
 
+
       .brand {
         display: flex;
         align-items: center;
@@ -403,6 +404,10 @@
         gap: 18px;
       }
 
+      .top-bar .title-block {
+        flex: 1;
+      }
+
       .top-bar-right {
         margin-left: auto;
         display: flex;
@@ -470,7 +475,7 @@
 
       .settings-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr);
         gap: 16px;
       }
 
@@ -497,6 +502,22 @@
 
       .setting-control {
         margin-top: 4px;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--aa-border-subtle);
+        background: var(--aa-bg-card);
+        color: var(--aa-text);
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .input-field:focus {
+        border-color: var(--aa-red);
       }
 
       .toggle-switch {
@@ -542,22 +563,6 @@
 
       input:checked + .toggle-slider:before {
         transform: translateX(20px);
-      }
-
-      .input-field {
-        width: 100%;
-        padding: 8px 12px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--aa-border-subtle);
-        background: var(--aa-bg-card);
-        color: var(--aa-text);
-        font-size: 0.85rem;
-        outline: none;
-        transition: border-color 0.2s ease;
-      }
-
-      .input-field:focus {
-        border-color: var(--aa-red);
       }
 
       .select-field {
@@ -611,6 +616,59 @@
         height: 1px;
         background: var(--aa-border-subtle);
         margin: 20px 0;
+      }
+
+      /* Mobile hamburger button */
+      .mobile-hamburger {
+        display: none;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.08);
+        padding: 8px;
+        font-size: 1.2rem;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--aa-text);
+        transition: all 0.18s ease;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        z-index: 1000;
+      }
+
+      .mobile-hamburger:hover {
+        background: rgba(15, 23, 42, 0.1);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: scale(1.05);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: rgba(148, 163, 184, 0.3);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger:hover {
+        background: rgba(31, 41, 55, 0.6);
+        border-color: rgba(148, 163, 184, 0.5);
+      }
+
+      /* Sidebar overlay for mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       /* Sidebar toggle button */
@@ -722,9 +780,44 @@
         .app-shell {
           grid-template-columns: minmax(0, 1fr) !important;
         }
+      }
+
+      @media (max-width: 768px) {
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr) !important;
+        }
+
+        .mobile-hamburger {
+          display: flex !important;
+        }
 
         .app-shell .sidebar {
-          display: none;
+          display: flex !important;
+          position: fixed !important;
+          left: -260px !important;
+          top: 0 !important;
+          bottom: 0 !important;
+          z-index: 10000 !important;
+          transition: left 0.3s ease !important;
+          width: 260px !important;
+          max-width: 85vw !important;
+          height: 100vh !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+          will-change: left;
+        }
+
+        .app-shell.sidebar-mobile-open .sidebar {
+          left: 0 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .sidebar-overlay {
+          display: block !important;
+          z-index: 9999 !important;
         }
       }
 
@@ -806,8 +899,12 @@
         </div>
       </aside>
 
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
       <main class="main">
         <header class="top-bar">
+          <button class="mobile-hamburger" id="mobileHamburger" type="button" aria-label="Toggle sidebar">
+            <span>☰</span>
+          </button>
           <div class="title-block">
             <div class="page-title">Admin Settings</div>
             <div class="page-subtitle">
@@ -822,267 +919,53 @@
         <section class="card">
           <div class="card-header">
             <div>
-              <div class="card-title">System Configuration</div>
+              <div class="card-title">Refresh Interval Settings</div>
               <div class="card-subtitle">
-                Core system settings and operational parameters
+                Control how often key dashboards refresh their data (in seconds)
               </div>
             </div>
           </div>
 
           <div class="settings-grid">
             <div class="setting-item">
-              <div class="setting-label">Enable Auto-Response</div>
+              <div class="setting-label">Dashboard refresh</div>
               <div class="setting-description">
-                Automatically respond to common queries without human intervention
+                Dashboard data update frequency
               </div>
               <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" checked />
-                  <span class="toggle-slider"></span>
-                </label>
+                <input
+                  type="number"
+                  id="dashboardRefreshSeconds"
+                  class="input-field"
+                  value="5"
+                  min="1"
+                  max="300"
+                />
               </div>
             </div>
 
             <div class="setting-item">
-              <div class="setting-label">Maintenance Mode</div>
+              <div class="setting-label">Conversations refresh</div>
               <div class="setting-description">
-                Temporarily disable chatbot services for system maintenance
+                Conversations data update frequency
               </div>
               <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Response Timeout (seconds)</div>
-              <div class="setting-description">
-                Maximum time to wait for chatbot response before escalation
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="30" min="5" max="120" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Max Concurrent Sessions</div>
-              <div class="setting-description">
-                Maximum number of simultaneous chatbot conversations
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="1000" min="100" max="10000" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Default Language</div>
-              <div class="setting-description">
-                Primary language for chatbot interactions
-              </div>
-              <div class="setting-control">
-                <select class="select-field">
-                  <option value="en">English</option>
-                  <option value="ms">Bahasa Malaysia</option>
-                  <option value="zh">Chinese</option>
-                  <option value="th">Thai</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Log Retention (days)</div>
-              <div class="setting-description">
-                Number of days to retain conversation logs
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="90" min="7" max="365" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Notification Settings</div>
-              <div class="card-subtitle">
-                Configure alerts and notification preferences
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-grid">
-            <div class="setting-item">
-              <div class="setting-label">Email Notifications</div>
-              <div class="setting-description">
-                Send email alerts for escalated conversations
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" checked />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">SLA Alert Threshold (%)</div>
-              <div class="setting-description">
-                Trigger alert when SLA drops below this percentage
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="95" min="80" max="100" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">High Volume Alert</div>
-              <div class="setting-description">
-                Alert when conversation volume exceeds normal levels
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" checked />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Alert Email Recipients</div>
-              <div class="setting-description">
-                Comma-separated list of email addresses
-              </div>
-              <div class="setting-control">
-                <input type="text" class="input-field" placeholder="admin@airasia.com, support@airasia.com" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Integration Settings</div>
-              <div class="card-subtitle">
-                External service connections and API configurations
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-grid">
-            <div class="setting-item">
-              <div class="setting-label">Workvivo API Endpoint</div>
-              <div class="setting-description">
-                Base URL for Workvivo API integration
-              </div>
-              <div class="setting-control">
-                <input type="text" class="input-field" value="https://api.workvivo.com/v1" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">API Rate Limit (requests/min)</div>
-              <div class="setting-description">
-                Maximum API requests per minute
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="100" min="10" max="1000" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Enable Webhook</div>
-              <div class="setting-description">
-                Send webhook notifications for conversation events
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Webhook URL</div>
-              <div class="setting-description">
-                Endpoint URL for webhook notifications
-              </div>
-              <div class="setting-control">
-                <input type="text" class="input-field" placeholder="https://example.com/webhook" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Security Settings</div>
-              <div class="card-subtitle">
-                Authentication and access control configurations
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-grid">
-            <div class="setting-item">
-              <div class="setting-label">Require Two-Factor Authentication</div>
-              <div class="setting-description">
-                Enforce 2FA for all admin users
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" checked />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Session Timeout (minutes)</div>
-              <div class="setting-description">
-                Automatic logout after inactivity period
-              </div>
-              <div class="setting-control">
-                <input type="number" class="input-field" value="60" min="5" max="480" />
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">IP Whitelist</div>
-              <div class="setting-description">
-                Restrict admin access to specific IP addresses
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" />
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-label">Audit Logging</div>
-              <div class="setting-description">
-                Record all administrative actions for audit purposes
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" checked />
-                  <span class="toggle-slider"></span>
-                </label>
+                <input
+                  type="number"
+                  id="conversationsRefreshSeconds"
+                  class="input-field"
+                  value="60"
+                  min="5"
+                  max="300"
+                />
               </div>
             </div>
           </div>
         </section>
 
         <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
-          <button class="btn btn-secondary">Cancel</button>
-          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-secondary" id="adminCancelButton">Cancel</button>
+          <button class="btn btn-primary" id="adminSaveButton">Save Changes</button>
         </div>
       </main>
     </div>
@@ -1186,23 +1069,125 @@
         const appShell = document.querySelector(".app-shell");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+        const mobileHamburger = document.getElementById("mobileHamburger");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         const storedSidebarState = window.localStorage.getItem("itAssistSidebar");
 
-        // Initialize sidebar state - expanded by default
-        appShell.classList.remove("sidebar-hidden");
-        if (storedSidebarState === "hidden") {
-          appShell.classList.add("sidebar-hidden");
+        // Check if mobile view
+        function isMobile() {
+          return window.innerWidth <= 768;
         }
 
-        sidebarToggle.addEventListener("click", () => {
-          const isHidden = appShell.classList.contains("sidebar-hidden");
-          if (isHidden) {
-            appShell.classList.remove("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "visible");
-          } else {
-            appShell.classList.add("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "hidden");
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+          if (!appShell) {
+            console.error("appShell not found!");
+            return;
           }
+          const isOpen = appShell.classList.contains("sidebar-mobile-open");
+          console.log("toggleMobileSidebar called, isOpen:", isOpen);
+          if (isOpen) {
+            appShell.classList.remove("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.remove("active");
+            }
+            console.log("Sidebar closed");
+          } else {
+            appShell.classList.add("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add("active");
+            }
+            console.log("Sidebar opened, class added:", appShell.classList.contains("sidebar-mobile-open"));
+          }
+        }
+
+        // Close mobile sidebar
+        function closeMobileSidebar() {
+          appShell.classList.remove("sidebar-mobile-open");
+          if (sidebarOverlay) {
+            sidebarOverlay.classList.remove("active");
+          }
+        }
+
+        // Initialize sidebar state - expanded by default (desktop only)
+        if (!isMobile()) {
+          appShell.classList.remove("sidebar-hidden");
+          if (storedSidebarState === "hidden") {
+            appShell.classList.add("sidebar-hidden");
+          }
+        } else {
+          // On mobile, sidebar is closed by default (off-screen)
+          // Don't call closeMobileSidebar() as it might interfere with initial state
+          // The sidebar starts at left: -260px which is correct
+        }
+
+        // Desktop sidebar toggle
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", () => {
+            if (isMobile()) {
+              toggleMobileSidebar();
+            } else {
+              const isHidden = appShell.classList.contains("sidebar-hidden");
+              if (isHidden) {
+                appShell.classList.remove("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "visible");
+              } else {
+                appShell.classList.add("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "hidden");
+              }
+            }
+          });
+        }
+
+        // Mobile hamburger toggle
+        if (mobileHamburger) {
+          mobileHamburger.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Mobile hamburger clicked");
+            console.log("Current sidebar classes:", appShell.className);
+            console.log("Is mobile:", isMobile());
+            toggleMobileSidebar();
+            console.log("After toggle, sidebar classes:", appShell.className);
+            console.log("Sidebar element:", document.querySelector(".sidebar"));
+            const sidebar = document.querySelector(".sidebar");
+            if (sidebar) {
+              console.log("Sidebar computed style left:", window.getComputedStyle(sidebar).left);
+              console.log("Sidebar display:", window.getComputedStyle(sidebar).display);
+              console.log("Sidebar visibility:", window.getComputedStyle(sidebar).visibility);
+              console.log("Sidebar z-index:", window.getComputedStyle(sidebar).zIndex);
+            }
+          });
+        } else {
+          console.error("Mobile hamburger button not found!");
+        }
+
+        // Close sidebar when clicking overlay
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener("click", () => {
+            closeMobileSidebar();
+          });
+        }
+
+        // Close sidebar when clicking nav items on mobile
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            if (isMobile()) {
+              closeMobileSidebar();
+            }
+          });
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            if (!isMobile()) {
+              closeMobileSidebar();
+            }
+          }, 250);
         });
       })();
 
@@ -1254,7 +1239,7 @@
           const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
           const mytTime = new Date(utc + (mytOffset * 60000));
 
-          // Format: 01 Dec 2025 • 11:06 AM MYT (using bullet separator for better readability)
+          // Format: 01 Dec 2025 • 11:06:23 AM MYT (using bullet separator for better readability)
           const day = String(mytTime.getDate()).padStart(2, '0');
           const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
           const month = monthNames[mytTime.getMonth()];
@@ -1262,18 +1247,75 @@
           
           let hours = mytTime.getHours();
           const minutes = String(mytTime.getMinutes()).padStart(2, '0');
+          const seconds = String(mytTime.getSeconds()).padStart(2, '0');
           const ampm = hours >= 12 ? 'PM' : 'AM';
           hours = hours % 12;
           hours = hours ? hours : 12; // the hour '0' should be '12'
           const hoursStr = String(hours).padStart(2, '0');
           
           // Using bullet separator (•) for clear visual separation between date and time
-          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes} ${ampm} MYT`;
+          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes}:${seconds} ${ampm} MYT`;
         }
 
         // Update immediately and then every second
         updateDateTime();
         setInterval(updateDateTime, 1000);
+      })();
+
+      // Refresh Interval Settings (Dashboard & Conversations)
+      (function () {
+        const dashboardInput = document.getElementById('dashboardRefreshSeconds');
+        const conversationsInput = document.getElementById('conversationsRefreshSeconds');
+        const saveButton = document.getElementById('adminSaveButton');
+        const cancelButton = document.getElementById('adminCancelButton');
+
+        if (!dashboardInput || !conversationsInput) return;
+
+        function clampSeconds(value, min, max, fallback) {
+          const n = Number(value);
+          if (!Number.isFinite(n)) return fallback;
+          return Math.min(max, Math.max(min, n));
+        }
+
+        function loadSettings() {
+          const storedDashboard = window.localStorage.getItem('itAssistDashboardRefreshSeconds');
+          const storedConversations = window.localStorage.getItem('itAssistConversationsRefreshSeconds');
+
+          const dashSeconds = clampSeconds(storedDashboard, 1, 300, 5);
+          const convSeconds = clampSeconds(storedConversations, 5, 300, 60);
+
+          dashboardInput.value = String(dashSeconds);
+          conversationsInput.value = String(convSeconds);
+        }
+
+        function saveSettings() {
+          const dashSeconds = clampSeconds(dashboardInput.value, 1, 300, 5);
+          const convSeconds = clampSeconds(conversationsInput.value, 5, 300, 60);
+
+          dashboardInput.value = String(dashSeconds);
+          conversationsInput.value = String(convSeconds);
+
+          window.localStorage.setItem('itAssistDashboardRefreshSeconds', String(dashSeconds));
+          window.localStorage.setItem('itAssistConversationsRefreshSeconds', String(convSeconds));
+
+          alert('Refresh intervals saved. Please reload open dashboards to apply changes.');
+        }
+
+        loadSettings();
+
+        if (saveButton) {
+          saveButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveSettings();
+          });
+        }
+
+        if (cancelButton) {
+          cancelButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            loadSettings();
+          });
+        }
       })();
     </script>
   </body>

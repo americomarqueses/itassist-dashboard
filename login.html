@@ -26,6 +26,39 @@
             position: relative;
             z-index: 1;
         }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1rem;
+            }
+            
+            .bg-white.rounded-2xl {
+                padding: 1.5rem;
+            }
+            
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-wrapper {
+                padding: 0.75rem;
+            }
+            
+            .bg-white.rounded-2xl {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.25rem;
+            }
+            
+            .h-16 {
+                height: 3rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">

@@ -444,6 +444,10 @@
         gap: 18px;
       }
 
+      .top-bar .title-block {
+        flex: 1;
+      }
+
       .title-block {
         display: flex;
         flex-direction: column;
@@ -472,10 +476,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 4px;
+        padding: 6px 4px;
         border-radius: 6px;
         background: rgba(241, 245, 249, 0.9);
         border: 1px solid rgba(148, 163, 184, 0.35);
+        height: fit-content;
+        min-height: 34px;
       }
 
       .datetime-display {
@@ -504,6 +510,16 @@
       .chip-primary {
         background: radial-gradient(circle at top left, #ef4444, #b91c1c);
         color: #fef2f2;
+      }
+
+      #customDaysInput {
+        width: 56px;
+        font-size: 0.75rem;
+        padding: 3px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--aa-text);
       }
 
       .search-input {
@@ -620,7 +636,7 @@
       /* KPI row */
       .kpi-row {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         gap: 12px;
         margin-bottom: 14px;
       }
@@ -675,6 +691,65 @@
         background: currentColor;
       }
 
+      /* Tab navigation */
+      .tab-container {
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--aa-border-subtle);
+        padding-bottom: 4px;
+      }
+
+      .tab-button {
+        padding: 6px 14px;
+        border: none;
+        background: transparent;
+        color: var(--aa-text-muted);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .tab-button:hover {
+        color: var(--aa-text);
+        background: rgba(148, 163, 184, 0.08);
+      }
+
+      .tab-button-active {
+        color: var(--aa-text);
+        background: rgba(148, 163, 184, 0.12);
+      }
+
+      .tab-button-active::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+        border-radius: 2px 2px 0 0;
+      }
+
+      .tab-content {
+        margin-top: 8px;
+      }
+
+      .tab-panel {
+        display: block;
+      }
+
+      .tab-panel-hidden {
+        display: none;
+      }
+
       /* Activity chart mock */
       .chart {
         margin-top: 4px;
@@ -726,6 +801,11 @@
         transition: d 0.8s ease-in-out;
       }
 
+      .axis-label {
+        font-size: 8px;
+        fill: var(--aa-text-muted);
+      }
+
       .chart-footer {
         display: flex;
         justify-content: space-between;
@@ -735,9 +815,20 @@
         color: var(--aa-text-muted);
       }
 
+      .chart-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 4px;
+        font-size: 0.75rem;
+        color: var(--aa-text-muted);
+      }
+
       .chart-legend {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
       }
 
@@ -856,14 +947,7 @@
       }
 
       .list-row.new-conversation::before {
-        content: "🆕";
-        position: absolute;
-        left: -24px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 0.75rem;
-        animation: pulse 1.2s ease-in-out 3;
-        z-index: 1;
+        content: none;
       }
 
       @keyframes pulse {
@@ -915,11 +999,22 @@
         color: var(--aa-text-muted);
       }
 
+      .badge-warn {
+        background: rgba(249, 115, 22, 0.1);
+        color: #c2410c;
+      }
+
       .bullet-label {
         font-size: 0.78rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      .conversation-date {
+        font-size: 0.7rem;
+        color: var(--aa-text-muted);
+        text-align: right;
       }
 
       .pill-soft {
@@ -1068,23 +1163,56 @@
       .heatmap-label {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
         position: relative;
         z-index: 1;
       }
 
-      .heatmap-label span {
+      .heatmap-label-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .heatmap-label-title {
         font-size: 0.85rem;
         color: var(--aa-text);
         font-weight: 500;
         line-height: 1.4;
       }
 
-      .heatmap-label strong {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--aa-red);
-        line-height: 1;
+      .heatmap-fraction {
+        font-size: 0.7rem;
+        color: var(--aa-text-muted);
+      }
+
+      .heatmap-percent {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--aa-text);
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        white-space: nowrap;
+      }
+
+      .heatmap-bar-container {
+        margin-top: 4px;
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.18);
+        overflow: hidden;
+      }
+
+      .heatmap-bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+        width: 0%;
+        transition: width 0.4s ease-out;
       }
 
       /* Dark mode-specific surface overrides */
@@ -1133,6 +1261,11 @@
       :root[data-theme="dark"] .badge-muted {
         background: rgba(148, 163, 184, 0.14);
         color: var(--aa-text-muted);
+      }
+
+      :root[data-theme="dark"] .badge-warn {
+        background: rgba(249, 115, 22, 0.18);
+        color: #fed7aa;
       }
 
       :root[data-theme="dark"] .table-wrapper {
@@ -1198,6 +1331,12 @@
         background: rgba(15, 23, 42, 0.92);
       }
 
+      :root[data-theme="dark"] #customDaysInput {
+        background: rgba(15, 23, 42, 0.96);
+        border-color: rgba(148, 163, 184, 0.7);
+        color: var(--aa-text);
+      }
+
       :root[data-theme="dark"] tbody tr:nth-child(even) {
         background: rgba(15, 23, 42, 0.96);
       }
@@ -1214,6 +1353,73 @@
         background: rgba(15, 23, 42, 0.96);
         border-color: rgba(55, 65, 81, 0.8);
         color: var(--aa-text-muted);
+      }
+
+      :root[data-theme="dark"] .tab-button {
+        color: var(--aa-text-muted);
+      }
+
+      :root[data-theme="dark"] .tab-button:hover {
+        color: var(--aa-text);
+        background: rgba(31, 41, 55, 0.6);
+      }
+
+      :root[data-theme="dark"] .tab-button-active {
+        color: var(--aa-text);
+        background: rgba(31, 41, 55, 0.8);
+      }
+
+      /* Mobile hamburger button */
+      .mobile-hamburger {
+        display: none;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.08);
+        padding: 8px;
+        font-size: 1.2rem;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--aa-text);
+        transition: all 0.18s ease;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        z-index: 1000;
+      }
+
+      .mobile-hamburger:hover {
+        background: rgba(15, 23, 42, 0.1);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: scale(1.05);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: rgba(148, 163, 184, 0.3);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger:hover {
+        background: rgba(31, 41, 55, 0.6);
+        border-color: rgba(148, 163, 184, 0.5);
+      }
+
+      /* Sidebar overlay for mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       /* Sidebar toggle button */
@@ -1300,10 +1506,6 @@
         .app-shell {
           grid-template-columns: minmax(0, 1fr) !important;
         }
-
-        .app-shell .sidebar {
-          display: none;
-        }
       }
 
       @media (max-width: 900px) {
@@ -1322,6 +1524,148 @@
 
         .heatmap {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 768px) {
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr) !important;
+        }
+
+        .mobile-hamburger {
+          display: flex !important;
+        }
+
+        .app-shell .sidebar {
+          display: flex !important;
+          position: fixed !important;
+          left: -260px !important;
+          top: 0 !important;
+          bottom: 0 !important;
+          z-index: 10000 !important;
+          transition: left 0.3s ease !important;
+          width: 260px !important;
+          max-width: 85vw !important;
+          height: 100vh !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+          will-change: left;
+        }
+
+        .app-shell.sidebar-mobile-open .sidebar {
+          left: 0 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .sidebar-overlay {
+          display: block !important;
+          z-index: 9999 !important;
+        }
+
+        .top-bar-right {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+          width: 100%;
+        }
+
+        .datetime-display {
+          width: 100%;
+        }
+
+        .top-filter-group {
+          width: 100%;
+        }
+
+        .chart {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .chart-stat-panel {
+          display: none;
+        }
+
+        .chart-area {
+          min-height: 250px;
+          overflow: visible;
+          position: relative;
+        }
+
+        #chartSVG,
+        #agentChartSVG {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          visibility: visible;
+          display: block;
+        }
+
+        .chart-grid {
+          visibility: visible;
+        }
+
+        .card-global-volumes {
+          height: auto;
+          min-height: 400px;
+          overflow: visible;
+        }
+
+        .card {
+          overflow: visible;
+        }
+
+        .tab-content {
+          overflow: visible;
+        }
+
+        .tab-button {
+          pointer-events: auto !important;
+          z-index: 1000 !important;
+          position: relative;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: rgba(239, 68, 68, 0.2);
+          min-height: 44px;
+          min-width: 44px;
+          cursor: pointer;
+          background: transparent;
+        }
+
+        .tab-buttons {
+          z-index: 1000 !important;
+          position: relative;
+          pointer-events: auto !important;
+        }
+
+        .tab-container {
+          z-index: 1000 !important;
+          position: relative;
+          pointer-events: auto !important;
+        }
+
+        .card-header {
+          z-index: 1;
+          position: relative;
+        }
+
+        .chart {
+          position: relative;
+          z-index: 1;
+        }
+
+        .chart-area {
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .chart-area svg {
+          pointer-events: none;
+        }
+
+        .chart-grid {
+          pointer-events: none;
         }
       }
 
@@ -1424,8 +1768,12 @@
         </div>
       </aside>
 
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
       <main class="main">
         <header class="top-bar">
+          <button class="mobile-hamburger" id="mobileHamburger" type="button" aria-label="Toggle sidebar">
+            <span>☰</span>
+          </button>
           <div class="title-block">
             <div class="page-title">Chatbot Activity Report</div>
             <div class="page-subtitle">
@@ -1434,18 +1782,14 @@
             </div>
           </div>
 
-          <div class="top-bar-right">
+            <div class="top-bar-right">
             <div class="datetime-display" id="datetimeDisplay"></div>
-            <div class="top-filter-group">
-              <button class="chip chip-primary">Last 24h</button>
-              <button class="chip">7 days</button>
-              <button class="chip">30 days</button>
-            </div>
-
-            <div class="search-input">
-              <span>🔍</span>
-              <input placeholder="Search conversation ID or user..." />
-              <span class="kbd">⌘K</span>
+            <div class="top-filter-group" id="timeRangeFilters">
+              <button class="chip chip-primary" data-range="24h">Last 24h</button>
+              <button class="chip" data-range="7d">7 days</button>
+              <button class="chip" data-range="30d">30 days</button>
+              <button class="chip" data-range="custom">Custom</button>
+              <input id="customDaysInput" type="number" min="1" max="90" value="14" />
             </div>
           </div>
         </header>
@@ -1490,17 +1834,6 @@
               </div>
 
               <div class="kpi-card">
-                <div class="kpi-label">Avg. first response</div>
-                <div class="kpi-value-row">
-                  <div class="kpi-value" id="kpiAvgResponse">1.3s</div>
-                  <div class="kpi-trend kpi-trend-down" id="kpiAvgResponseTrend">
-                    <span class="kpi-trend-dot"></span>
-                    <span id="kpiAvgResponseTrendValue">-0.4s</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="kpi-card">
                 <div class="kpi-label">Escalation to human</div>
                 <div class="kpi-value-row">
                   <div class="kpi-value" id="kpiEscalation">6.8%</div>
@@ -1510,95 +1843,222 @@
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="chart">
-              <div class="chart-area">
-                <div class="chart-grid"></div>
-                <svg id="chartSVG" style="position: absolute; inset: 2px 0 0; width: 100%; height: 100%; z-index: 1;" viewBox="0 0 400 300" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="sessionsGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#f87171;stop-opacity:0.9" />
-                      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.8" />
-                    </linearGradient>
-                    <linearGradient id="resolvedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
-                      <stop offset="25%" style="stop-color:#22c55e;stop-opacity:1" />
-                      <stop offset="50%" style="stop-color:#16a34a;stop-opacity:1" />
-                      <stop offset="75%" style="stop-color:#15803d;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#166534;stop-opacity:0.9" />
-                    </linearGradient>
-                  </defs>
-                  <path id="chartLineResolvedPath" fill="url(#resolvedGradient)" opacity="1" stroke="none"></path>
-                  <path id="chartLinePath" fill="url(#sessionsGradient)" opacity="0.9" stroke="none"></path>
-                </svg>
-                <div class="chart-footer">
-                  <div class="chart-legend">
-                    <div class="legend-item">
-                      <span class="legend-dot"></span>
-                      <span>Sessions</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-dot legend-dot-alt"></span>
-                      <span>Resolved</span>
-                    </div>
-                  </div>
-                  <div>00:00 &ndash; 24:00 (local time)</div>
+              <div class="kpi-card">
+                <div class="kpi-label">Avg. initial bot response (all intents)</div>
+                <div class="kpi-value-row">
+                  <div class="kpi-value" id="kpiAvgBotResponse">1.3s</div>
                 </div>
               </div>
 
-              <aside class="chart-stat-panel">
-                <div style="margin-top: 8px;">
-                  <div style="font-size: 0.7rem; color: var(--aa-text-muted); margin-bottom: 6px; font-weight: 500;">Live Conversations</div>
-                  <div class="list" id="liveConversationsList" style="max-height: 400px; overflow-y: auto;">
-                    <div class="list-row" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                      <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
-                        #AA-98234 · Password reset not received
-                      </div>
-                      <div style="align-self: start;">
-                        <span class="badge badge-success">Resolved</span>
-                      </div>
-                    </div>
-
-                    <div class="list-row" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                      <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
-                        #AA-98212 · VPN client cannot connect to corp Wi-Fi
-                      </div>
-                      <div style="align-self: start;">
-                        <span class="badge badge-muted">In progress</span>
-                      </div>
-                    </div>
-
-                    <div class="list-row" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                      <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
-                        #AA-98190 · Laptop performance troubleshooting
-                      </div>
-                      <div style="align-self: start;">
-                        <span class="badge badge-success">Contained</span>
-                      </div>
-                    </div>
-
-                    <div class="list-row" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                      <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
-                        #AA-98175 · Request Google backup code for 2FA
-                      </div>
-                      <div style="align-self: start;">
-                        <span class="badge badge-success">Resolved</span>
-                      </div>
-                    </div>
-
-                    <div class="list-row" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                      <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
-                        #AA-98162 · Account locked after failed attempts
-                      </div>
-                      <div style="align-self: start;">
-                        <span class="badge badge-success">Resolved</span>
-                      </div>
-                    </div>
-                  </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Avg. agent first reply (6 &amp; 9)</div>
+                <div class="kpi-value-row">
+                  <div class="kpi-value" id="kpiAvgAgentResponse">8.5s</div>
                 </div>
-              </aside>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-label">Avg. agent resolution</div>
+                <div class="kpi-value-row">
+                  <div class="kpi-value" id="kpiAvgAgentResolution">26.0s</div>
+                </div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Total Uncategorized Chats</div>
+                <div class="kpi-value-row">
+                  <div class="kpi-value" id="kpiUncategorizedChats">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+              <div class="tab-buttons">
+                <button class="tab-button tab-button-active" data-tab="chatbot-performance">Chatbot Performance</button>
+                <button class="tab-button" data-tab="agent-performance">Agent Performance</button>
+              </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+              <!-- Chatbot Performance Tab Panel -->
+              <div id="chatbot-performance-panel" class="tab-panel">
+                <div class="chart">
+                  <div class="chart-area">
+                    <!-- Legend at the top -->
+                    <div class="chart-header">
+                      <div class="chart-legend">
+                        <div class="legend-item">
+                          <span class="legend-dot legend-dot-alt"></span>
+                          <span>Resolved</span>
+                        </div>
+                        <div class="legend-item">
+                          <span class="legend-dot legend-dot-new"></span>
+                          <span>New</span>
+                        </div>
+                        <div class="legend-item">
+                          <span class="legend-dot legend-dot-ongoing"></span>
+                          <span>In Progress</span>
+                        </div>
+                      </div>
+                      <div>00:00 &ndash; 24:00 (local time)</div>
+                    </div>
+                    <div class="chart-grid"></div>
+                    <svg id="chartSVG" style="position: absolute; inset: 2px 0 0; width: 100%; height: 100%; z-index: 1;" viewBox="0 0 400 300" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="sessionsGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#f87171;stop-opacity:0.9" />
+                          <stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.8" />
+                        </linearGradient>
+                        <linearGradient id="resolvedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+                          <stop offset="25%" style="stop-color:#22c55e;stop-opacity:1" />
+                          <stop offset="50%" style="stop-color:#16a34a;stop-opacity:1" />
+                          <stop offset="75%" style="stop-color:#15803d;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#166534;stop-opacity:0.9" />
+                        </linearGradient>
+                        <linearGradient id="ongoingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#fb923c;stop-opacity:0.9" />
+                          <stop offset="50%" style="stop-color:#ea580c;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#c2410c;stop-opacity:0.8" />
+                        </linearGradient>
+                      </defs>
+                      <!-- Y-axis labels (counts) -->
+                      <g id="yAxisLabels" class="axis-labels">
+                        <text x="8" y="20" class="axis-label" font-size="8">2000</text>
+                        <text x="8" y="80" class="axis-label" font-size="8">1500</text>
+                        <text x="8" y="140" class="axis-label" font-size="8">1000</text>
+                        <text x="8" y="200" class="axis-label" font-size="8">500</text>
+                        <text x="8" y="260" class="axis-label" font-size="8">0</text>
+                      </g>
+                      <!-- Chart paths (order will be dynamically adjusted) -->
+                      <!-- Initial placeholder paths to ensure visibility -->
+                      <path id="chartLineResolvedPath" fill="url(#resolvedGradient)" opacity="0.75" stroke="#16a34a" stroke-width="2" stroke-opacity="0.8" d="M0 50 C 50 45, 100 40, 150 35 C 200 30, 250 35, 300 40 C 350 45, 400 50, 400 50 L 400 300 L 0 300 Z"></path>
+                      <path id="chartLineOngoingPath" fill="url(#ongoingGradient)" opacity="0.85" stroke="#ea580c" stroke-width="2" stroke-opacity="0.8" d="M0 200 C 50 195, 100 190, 150 185 C 200 180, 250 185, 300 190 C 350 195, 400 200, 400 200 L 400 300 L 0 300 Z"></path>
+                      <path id="chartLinePath" fill="url(#sessionsGradient)" opacity="0.85" stroke="#ef4444" stroke-width="2" stroke-opacity="0.8" d="M0 130 C 50 125, 100 120, 150 115 C 200 110, 250 115, 300 120 C 350 125, 400 130, 400 130 L 400 300 L 0 300 Z"></path>
+                      <!-- X-axis labels (time) -->
+                      <g id="xAxisLabels" class="axis-labels">
+                        <text x="0" y="290" class="axis-label" font-size="8">00:00</text>
+                        <text x="100" y="290" class="axis-label" font-size="8">06:00</text>
+                        <text x="200" y="290" class="axis-label" font-size="8">12:00</text>
+                        <text x="300" y="290" class="axis-label" font-size="8">18:00</text>
+                        <text x="380" y="290" class="axis-label" font-size="8">24:00</text>
+                      </g>
+                    </svg>
+                  </div>
+
+                  <aside class="chart-stat-panel">
+                    <div style="margin-top: 8px;">
+                      <div style="font-size: 0.7rem; color: var(--aa-text-muted); margin-bottom: 6px; font-weight: 500;">Live Conversations</div>
+                      <div class="list" id="liveConversationsList" style="overflow-y: visible;">
+                        <div class="list-row" style="grid-template-columns: 2fr 0.8fr 1fr; align-items: start;">
+                          <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                            #AA-98234 · Password reset not received
+                          </div>
+                          <div style="align-self: start;">
+                            <span class="badge badge-live">New</span>
+                          </div>
+                          <div class="conversation-date">01 Dec 10:15</div>
+                        </div>
+
+                        <div class="list-row" style="grid-template-columns: 2fr 0.8fr 1fr; align-items: start;">
+                          <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                            #AA-98212 · VPN client cannot connect to corp Wi-Fi
+                          </div>
+                          <div style="align-self: start;">
+                            <span class="badge badge-warn">In progress</span>
+                          </div>
+                          <div class="conversation-date">01 Dec 10:12</div>
+                        </div>
+
+                        <div class="list-row" style="grid-template-columns: 2fr 0.8fr 1fr; align-items: start;">
+                          <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                            #AA-98190 · Laptop performance troubleshooting
+                          </div>
+                          <div style="align-self: start;">
+                            <span class="badge badge-success">Resolved</span>
+                          </div>
+                          <div class="conversation-date">01 Dec 09:58</div>
+                        </div>
+
+                        <div class="list-row" style="grid-template-columns: 2fr 0.8fr 1fr; align-items: start;">
+                          <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                            #AA-98175 · Request Google backup code for 2FA
+                          </div>
+                          <div style="align-self: start;">
+                            <span class="badge badge-success">Resolved</span>
+                          </div>
+                          <div class="conversation-date">01 Dec 09:47</div>
+                        </div>
+
+                        <div class="list-row" style="grid-template-columns: 2fr 0.8fr 1fr; align-items: start;">
+                          <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                            #AA-98162 · Account locked after failed attempts
+                          </div>
+                          <div style="align-self: start;">
+                            <span class="badge badge-success">Resolved</span>
+                          </div>
+                          <div class="conversation-date">01 Dec 09:40</div>
+                        </div>
+                      </div>
+                    </div>
+                  </aside>
+                </div>
+              </div>
+
+              <!-- Agent Performance Tab Panel -->
+              <div id="agent-performance-panel" class="tab-panel tab-panel-hidden">
+                <div class="chart">
+                  <div class="chart-area">
+                    <!-- Legend at the top -->
+                    <div class="chart-header">
+                      <div class="chart-legend">
+                        <div class="legend-item">
+                          <span class="legend-dot legend-dot-alt"></span>
+                          <span>Requests Handled</span>
+                        </div>
+                      </div>
+                      <div>Last 24 hours</div>
+                    </div>
+                    <div class="chart-grid"></div>
+                    <svg id="agentChartSVG" style="position: absolute; inset: 2px 0 0; width: 100%; height: 100%; z-index: 1;" viewBox="0 0 400 300" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="agentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.9" />
+                          <stop offset="50%" style="stop-color:#2563eb;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.8" />
+                        </linearGradient>
+                      </defs>
+                      <!-- Y-axis labels (counts) -->
+                      <g id="agentYAxisLabels" class="axis-labels">
+                        <text x="8" y="20" class="axis-label" font-size="8">500</text>
+                        <text x="8" y="80" class="axis-label" font-size="8">400</text>
+                        <text x="8" y="140" class="axis-label" font-size="8">300</text>
+                        <text x="8" y="200" class="axis-label" font-size="8">200</text>
+                        <text x="8" y="260" class="axis-label" font-size="8">100</text>
+                        <text x="8" y="290" class="axis-label" font-size="8">0</text>
+                      </g>
+                      <!-- Agent bars will be dynamically generated -->
+                      <g id="agentBars"></g>
+                      <!-- X-axis labels (agent names) -->
+                      <g id="agentXAxisLabels" class="axis-labels">
+                        <!-- Will be dynamically generated -->
+                      </g>
+                    </svg>
+                  </div>
+
+                  <aside class="chart-stat-panel">
+                    <div style="margin-top: 8px;">
+                      <div style="font-size: 0.7rem; color: var(--aa-text-muted); margin-bottom: 6px; font-weight: 500;">Top Agents</div>
+                      <div class="list" id="topAgentsList" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Will be dynamically populated -->
+                      </div>
+                    </div>
+                  </aside>
+                </div>
+              </div>
             </div>
           </section>
         </section>
@@ -1617,41 +2077,131 @@
             </div>
           </div>
 
-          <div class="heatmap">
-            <div class="heatmap-cell heat-high">
+          <div class="heatmap" id="intentHotspotsHeatmap">
+            <div class="heatmap-cell heat-high" data-intent="unlock-account">
               <div class="heatmap-label">
-                <span>1️⃣ Unlock My Account</span>
-                <strong>24%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">1️⃣ Unlock My Account</span>
+                  <span class="heatmap-percent" id="intent-percent-unlock-account">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-unlock-account">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-unlock-account"></div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-cell heat-medium">
+            <div class="heatmap-cell heat-high" data-intent="reset-email-password">
               <div class="heatmap-label">
-                <span>2️⃣ Reset Email Password</span>
-                <strong>18%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">2️⃣ Reset Email Password</span>
+                  <span class="heatmap-percent" id="intent-percent-reset-email-password">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-reset-email-password">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-reset-email-password"></div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-cell heat-medium">
+            <div class="heatmap-cell heat-medium" data-intent="google-backup-code">
               <div class="heatmap-label">
-                <span>3️⃣ Request Google Backup Code</span>
-                <strong>12%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">3️⃣ Request Google Backup Code</span>
+                  <span class="heatmap-percent" id="intent-percent-google-backup-code">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-google-backup-code">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-google-backup-code"></div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-cell heat-low">
+            <div class="heatmap-cell heat-medium" data-intent="vpn-access">
               <div class="heatmap-label">
-                <span>4️⃣ Request VPN Access</span>
-                <strong>10%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">4️⃣ Request VPN Access</span>
+                  <span class="heatmap-percent" id="intent-percent-vpn-access">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-vpn-access">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-vpn-access"></div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-cell heat-low">
+            <div class="heatmap-cell heat-low" data-intent="newskies-password">
               <div class="heatmap-label">
-                <span>5️⃣ Newskies Password Reset</span>
-                <strong>8%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">5️⃣ Newskies Password Reset</span>
+                  <span class="heatmap-percent" id="intent-percent-newskies-password">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-newskies-password">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-newskies-password"></div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-cell heat-low">
+            <div class="heatmap-cell heat-low" data-intent="other-requests">
               <div class="heatmap-label">
-                <span>8️⃣ Submit a New Service Request</span>
-                <strong>28%</strong>
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">6️⃣ Other Requests</span>
+                  <span class="heatmap-percent" id="intent-percent-other-requests">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-other-requests">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-other-requests"></div>
+                </div>
+              </div>
+            </div>
+            <div class="heatmap-cell heat-low" data-intent="report-error">
+              <div class="heatmap-label">
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">7️⃣ Report an Error</span>
+                  <span class="heatmap-percent" id="intent-percent-report-error">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-report-error">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-report-error"></div>
+                </div>
+              </div>
+            </div>
+            <div class="heatmap-cell heat-low" data-intent="service-request">
+              <div class="heatmap-label">
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">8️⃣ Submit a New Service Request</span>
+                  <span class="heatmap-percent" id="intent-percent-service-request">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-service-request">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-service-request"></div>
+                </div>
+              </div>
+            </div>
+            <div class="heatmap-cell heat-low" data-intent="connect-live-agent">
+              <div class="heatmap-label">
+                <div class="heatmap-label-header">
+                  <span class="heatmap-label-title">9️⃣ Connect to a Live Agent</span>
+                  <span class="heatmap-percent" id="intent-percent-connect-live-agent">0%</span>
+                </div>
+                <div class="heatmap-fraction">
+                  <span id="intent-count-connect-live-agent">0 / 0</span>
+                </div>
+                <div class="heatmap-bar-container">
+                  <div class="heatmap-bar-fill" id="intent-bar-connect-live-agent"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1781,23 +2331,125 @@
         const appShell = document.querySelector(".app-shell");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+        const mobileHamburger = document.getElementById("mobileHamburger");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         const storedSidebarState = window.localStorage.getItem("itAssistSidebar");
 
-        // Initialize sidebar state - expanded by default
-        appShell.classList.remove("sidebar-hidden");
-        if (storedSidebarState === "hidden") {
-          appShell.classList.add("sidebar-hidden");
+        // Check if mobile view
+        function isMobile() {
+          return window.innerWidth <= 768;
         }
 
-        sidebarToggle.addEventListener("click", () => {
-          const isHidden = appShell.classList.contains("sidebar-hidden");
-          if (isHidden) {
-            appShell.classList.remove("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "visible");
-          } else {
-            appShell.classList.add("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "hidden");
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+          if (!appShell) {
+            console.error("appShell not found!");
+            return;
           }
+          const isOpen = appShell.classList.contains("sidebar-mobile-open");
+          console.log("toggleMobileSidebar called, isOpen:", isOpen);
+          if (isOpen) {
+            appShell.classList.remove("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.remove("active");
+            }
+            console.log("Sidebar closed");
+          } else {
+            appShell.classList.add("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add("active");
+            }
+            console.log("Sidebar opened, class added:", appShell.classList.contains("sidebar-mobile-open"));
+          }
+        }
+
+        // Close mobile sidebar
+        function closeMobileSidebar() {
+          appShell.classList.remove("sidebar-mobile-open");
+          if (sidebarOverlay) {
+            sidebarOverlay.classList.remove("active");
+          }
+        }
+
+        // Initialize sidebar state - expanded by default (desktop only)
+        if (!isMobile()) {
+          appShell.classList.remove("sidebar-hidden");
+          if (storedSidebarState === "hidden") {
+            appShell.classList.add("sidebar-hidden");
+          }
+        } else {
+          // On mobile, sidebar is closed by default (off-screen)
+          // Don't call closeMobileSidebar() as it might interfere with initial state
+          // The sidebar starts at left: -260px which is correct
+        }
+
+        // Desktop sidebar toggle
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", () => {
+            if (isMobile()) {
+              toggleMobileSidebar();
+            } else {
+              const isHidden = appShell.classList.contains("sidebar-hidden");
+              if (isHidden) {
+                appShell.classList.remove("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "visible");
+              } else {
+                appShell.classList.add("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "hidden");
+              }
+            }
+          });
+        }
+
+        // Mobile hamburger toggle
+        if (mobileHamburger) {
+          mobileHamburger.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Mobile hamburger clicked");
+            console.log("Current sidebar classes:", appShell.className);
+            console.log("Is mobile:", isMobile());
+            toggleMobileSidebar();
+            console.log("After toggle, sidebar classes:", appShell.className);
+            console.log("Sidebar element:", document.querySelector(".sidebar"));
+            const sidebar = document.querySelector(".sidebar");
+            if (sidebar) {
+              console.log("Sidebar computed style left:", window.getComputedStyle(sidebar).left);
+              console.log("Sidebar display:", window.getComputedStyle(sidebar).display);
+              console.log("Sidebar visibility:", window.getComputedStyle(sidebar).visibility);
+              console.log("Sidebar z-index:", window.getComputedStyle(sidebar).zIndex);
+            }
+          });
+        } else {
+          console.error("Mobile hamburger button not found!");
+        }
+
+        // Close sidebar when clicking overlay
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener("click", () => {
+            closeMobileSidebar();
+          });
+        }
+
+        // Close sidebar when clicking nav items on mobile
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            if (isMobile()) {
+              closeMobileSidebar();
+            }
+          });
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            if (!isMobile()) {
+              closeMobileSidebar();
+            }
+          }, 250);
         });
       })();
 
@@ -1837,6 +2489,281 @@
         });
       })();
 
+      // Tab Switching Functionality
+      (function () {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const chatbotPanel = document.getElementById('chatbot-performance-panel');
+        const agentPanel = document.getElementById('agent-performance-panel');
+
+        function switchTab(tabName) {
+          // Remove active class from all buttons
+          tabButtons.forEach(btn => {
+            btn.classList.remove('tab-button-active');
+          });
+
+          // Hide all panels
+          chatbotPanel.classList.add('tab-panel-hidden');
+          agentPanel.classList.add('tab-panel-hidden');
+
+          // Show selected panel and activate button
+          if (tabName === 'chatbot-performance') {
+            chatbotPanel.classList.remove('tab-panel-hidden');
+            document.querySelector('[data-tab="chatbot-performance"]').classList.add('tab-button-active');
+          } else if (tabName === 'agent-performance') {
+            agentPanel.classList.remove('tab-panel-hidden');
+            document.querySelector('[data-tab="agent-performance"]').classList.add('tab-button-active');
+          }
+        }
+
+        // Add event listeners to tab buttons
+        tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            switchTab(tabName);
+          });
+        });
+      })();
+
+      // Agent Performance Graph Simulation
+      (function () {
+        const agentChartSVG = document.getElementById('agentChartSVG');
+        const agentBars = document.getElementById('agentBars');
+        const agentYAxisLabels = document.getElementById('agentYAxisLabels');
+        const agentXAxisLabels = document.getElementById('agentXAxisLabels');
+        const topAgentsList = document.getElementById('topAgentsList');
+
+        if (!agentChartSVG || !agentBars) return;
+
+        // Sample agent data
+        const agentNames = ['Agent-001', 'Agent-002', 'Agent-003', 'Agent-004', 'Agent-005', 'Agent-006', 'Agent-007', 'Agent-008'];
+        const agentColors = [
+          '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af',
+          '#1e3a8a', '#172554', '#0f172a', '#0a0e1a'
+        ];
+
+        // Base request counts for each agent
+        let agentRequests = agentNames.map(() => Math.floor(Math.random() * 300) + 100);
+
+        function generateAgentChart() {
+          // Clear existing bars and labels
+          agentBars.innerHTML = '';
+          agentXAxisLabels.innerHTML = '';
+
+          const maxRequests = Math.max(...agentRequests, 500);
+          const chartWidth = 400;
+          const chartHeight = 300;
+          const barWidth = (chartWidth / agentNames.length) * 0.6;
+          const barSpacing = chartWidth / agentNames.length;
+          const maxBarHeight = chartHeight - 40; // Leave space for labels
+
+          // Generate bars
+          agentNames.forEach((agent, index) => {
+            const requests = agentRequests[index];
+            const barHeight = (requests / maxRequests) * maxBarHeight;
+            const x = (index * barSpacing) + (barSpacing - barWidth) / 2;
+            const y = chartHeight - 20 - barHeight; // 20px for bottom margin
+
+            // Create bar rectangle
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x);
+            rect.setAttribute('y', y);
+            rect.setAttribute('width', barWidth);
+            rect.setAttribute('height', barHeight);
+            rect.setAttribute('fill', `url(#agentGradient)`);
+            rect.setAttribute('opacity', '0.85');
+            rect.setAttribute('rx', '2');
+            rect.setAttribute('ry', '2');
+            rect.style.transition = 'height 0.8s ease-in-out, y 0.8s ease-in-out';
+            agentBars.appendChild(rect);
+
+            // Add value label on top of bar
+            if (barHeight > 15) {
+              const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              text.setAttribute('x', x + barWidth / 2);
+              text.setAttribute('y', y - 5);
+              text.setAttribute('text-anchor', 'middle');
+              text.setAttribute('class', 'axis-label');
+              text.setAttribute('font-size', '8');
+              text.textContent = requests;
+              agentBars.appendChild(text);
+            }
+
+            // Add agent name label on x-axis
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', x + barWidth / 2);
+            label.setAttribute('y', chartHeight - 5);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('class', 'axis-label');
+            label.setAttribute('font-size', '7');
+            label.textContent = agentNames[index].replace('Agent-', 'A');
+            agentXAxisLabels.appendChild(label);
+          });
+
+          // Update top agents list
+          updateTopAgentsList();
+        }
+
+        function updateTopAgentsList() {
+          // Create array of agents with their request counts
+          const agentsData = agentNames.map((name, index) => ({
+            name: name,
+            requests: agentRequests[index]
+          }));
+
+          // Sort by requests (descending)
+          agentsData.sort((a, b) => b.requests - a.requests);
+
+          // Clear and populate list
+          topAgentsList.innerHTML = '';
+          agentsData.slice(0, 5).forEach((agent, index) => {
+            const row = document.createElement('div');
+            row.className = 'list-row';
+            row.style.cssText = 'grid-template-columns: 1.8fr 1fr; align-items: start;';
+            
+            const rank = index + 1;
+            const rankEmoji = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][index] || `${rank}️⃣`;
+            
+            row.innerHTML = `
+              <div class="bullet-label" style="white-space: normal; overflow: visible; text-overflow: clip;">
+                ${rankEmoji} ${agent.name}
+              </div>
+              <div style="align-self: start; font-size: 0.85rem; font-weight: 600; color: var(--aa-accent-blue);">
+                ${agent.requests} requests
+              </div>
+            `;
+            topAgentsList.appendChild(row);
+          });
+        }
+
+        function updateAgentChart() {
+          // Update request counts with small variations
+          agentRequests = agentRequests.map(count => {
+            const change = Math.floor((Math.random() - 0.4) * 30); // -12 to +18
+            return Math.max(50, Math.min(500, count + change));
+          });
+
+          // Regenerate chart
+          generateAgentChart();
+        }
+
+        // Initialize chart
+        generateAgentChart();
+
+        // Update chart at configured interval (uses same dashboard refresh as main chart)
+        const agentRefreshMs = (function () {
+          const stored = window.localStorage.getItem('itAssistDashboardRefreshSeconds');
+          const seconds = Number(stored);
+          if (!Number.isFinite(seconds) || seconds <= 0) return 5000;
+          const clamped = Math.min(300, Math.max(1, seconds));
+          return clamped * 1000;
+        })();
+        setInterval(updateAgentChart, agentRefreshMs);
+      })();
+
+      // Intent Hotspots Count Simulation
+      (function () {
+        const intentElements = {
+          'unlock-account': document.getElementById('intent-count-unlock-account'),
+          'reset-email-password': document.getElementById('intent-count-reset-email-password'),
+          'google-backup-code': document.getElementById('intent-count-google-backup-code'),
+          'vpn-access': document.getElementById('intent-count-vpn-access'),
+          'newskies-password': document.getElementById('intent-count-newskies-password'),
+          'other-requests': document.getElementById('intent-count-other-requests'),
+          'report-error': document.getElementById('intent-count-report-error'),
+          'service-request': document.getElementById('intent-count-service-request'),
+          'connect-live-agent': document.getElementById('intent-count-connect-live-agent')
+        };
+
+        const intentPercentElements = {
+          'unlock-account': document.getElementById('intent-percent-unlock-account'),
+          'reset-email-password': document.getElementById('intent-percent-reset-email-password'),
+          'google-backup-code': document.getElementById('intent-percent-google-backup-code'),
+          'vpn-access': document.getElementById('intent-percent-vpn-access'),
+          'newskies-password': document.getElementById('intent-percent-newskies-password'),
+          'other-requests': document.getElementById('intent-percent-other-requests'),
+          'report-error': document.getElementById('intent-percent-report-error'),
+          'service-request': document.getElementById('intent-percent-service-request'),
+          'connect-live-agent': document.getElementById('intent-percent-connect-live-agent')
+        };
+
+        const intentBarElements = {
+          'unlock-account': document.getElementById('intent-bar-unlock-account'),
+          'reset-email-password': document.getElementById('intent-bar-reset-email-password'),
+          'google-backup-code': document.getElementById('intent-bar-google-backup-code'),
+          'vpn-access': document.getElementById('intent-bar-vpn-access'),
+          'newskies-password': document.getElementById('intent-bar-newskies-password'),
+          'other-requests': document.getElementById('intent-bar-other-requests'),
+          'report-error': document.getElementById('intent-bar-report-error'),
+          'service-request': document.getElementById('intent-bar-service-request'),
+          'connect-live-agent': document.getElementById('intent-bar-connect-live-agent')
+        };
+
+        // Base counts for each intent
+        let intentCounts = {
+          'unlock-account': 2038,
+          'reset-email-password': 1528,
+          'google-backup-code': 1019,
+          'vpn-access': 849,
+          'newskies-password': 679,
+          'other-requests': 900,
+          'report-error': 600,
+          'service-request': 1200,
+          'connect-live-agent': 679
+        };
+
+        function updateIntentCounts() {
+          // Update intent counts with small variations
+          Object.keys(intentCounts).forEach(intent => {
+            const change = Math.floor((Math.random() - 0.4) * 50); // -20 to +30
+            intentCounts[intent] = Math.max(500, intentCounts[intent] + change);
+          });
+          
+          // Calculate total of all intents
+          const totalIntents = Object.values(intentCounts).reduce((sum, count) => sum + count, 0);
+
+          // Update display for all intents (show count / total, percentage, and bar)
+          Object.keys(intentCounts).forEach(intent => {
+            const element = intentElements[intent];
+            const percentElement = intentPercentElements[intent];
+            const barElement = intentBarElements[intent];
+            if (element) {
+              element.textContent = `${intentCounts[intent].toLocaleString()} / ${totalIntents.toLocaleString()}`;
+            }
+            if (percentElement && totalIntents > 0) {
+              const percent = (intentCounts[intent] / totalIntents) * 100;
+              percentElement.textContent = `${percent.toFixed(1)}%`;
+              if (barElement) {
+                barElement.style.width = `${percent.toFixed(1)}%`;
+              }
+            }
+          });
+          
+          // Expose total sessions (sum of all intents) globally for KPI use
+          window.itAssistTotalSessions = totalIntents;
+          const totalSessionsEl = document.getElementById('kpiTotalSessions');
+          if (totalSessionsEl) {
+            totalSessionsEl.textContent = totalIntents.toLocaleString();
+          }
+
+          // Derive uncategorized chats as a small fraction of total and expose globally
+          const uncategorizedChats = Math.max(0, Math.round(totalIntents * 0.06));
+          window.itAssistUncategorizedChats = uncategorizedChats;
+        }
+
+        // Initialize counts immediately
+        updateIntentCounts();
+
+        // Update counts at configured interval (uses same dashboard refresh as main chart)
+        const intentsRefreshMs = (function () {
+          const stored = window.localStorage.getItem('itAssistDashboardRefreshSeconds');
+          const seconds = Number(stored);
+          if (!Number.isFinite(seconds) || seconds <= 0) return 5000;
+          const clamped = Math.min(300, Math.max(1, seconds));
+          return clamped * 1000;
+        })();
+        setInterval(updateIntentCounts, intentsRefreshMs);
+      })();
+
       // Live Conversations Simulation
       (function () {
         const conversationsList = document.getElementById('liveConversationsList');
@@ -1844,20 +2771,30 @@
 
         // Sample conversation data
         const sampleConversations = [
-          { id: 98250, text: 'Email not syncing with Outlook', status: 'Live', statusClass: 'badge-live' },
-          { id: 98251, text: 'Cannot access shared drive folder', status: 'In progress', statusClass: 'badge-muted' },
-          { id: 98252, text: 'Printer driver installation failed', status: 'Live', statusClass: 'badge-live' },
-          { id: 98253, text: 'Request access to Salesforce', status: 'In progress', statusClass: 'badge-muted' },
-          { id: 98254, text: 'Laptop screen flickering issue', status: 'Live', statusClass: 'badge-live' },
-          { id: 98255, text: 'Need help with Teams setup', status: 'In progress', statusClass: 'badge-muted' },
-          { id: 98256, text: 'Password expired, need reset', status: 'Live', statusClass: 'badge-live' },
-          { id: 98257, text: 'VPN connection timeout error', status: 'In progress', statusClass: 'badge-muted' },
-          { id: 98258, text: 'Software license activation issue', status: 'Live', statusClass: 'badge-live' },
-          { id: 98259, text: 'Request new monitor for workstation', status: 'In progress', statusClass: 'badge-muted' }
+          { id: 98250, text: 'Email not syncing with Outlook', status: 'New', statusClass: 'badge-live' },
+          { id: 98251, text: 'Cannot access shared drive folder', status: 'In progress', statusClass: 'badge-warn' },
+          { id: 98252, text: 'Printer driver installation failed', status: 'New', statusClass: 'badge-live' },
+          { id: 98253, text: 'Request access to Salesforce', status: 'In progress', statusClass: 'badge-warn' },
+          { id: 98254, text: 'Laptop screen flickering issue', status: 'New', statusClass: 'badge-live' },
+          { id: 98255, text: 'Need help with Teams setup', status: 'In progress', statusClass: 'badge-warn' },
+          { id: 98256, text: 'Password expired, need reset', status: 'New', statusClass: 'badge-live' },
+          { id: 98257, text: 'VPN connection timeout error', status: 'In progress', statusClass: 'badge-warn' },
+          { id: 98258, text: 'Software license activation issue', status: 'Resolved', statusClass: 'badge-success' },
+          { id: 98259, text: 'Request new monitor for workstation', status: 'Resolved', statusClass: 'badge-success' }
         ];
 
         let conversationCounter = 98260;
         let sampleIndex = 0;
+
+        function formatConversationTime() {
+          const now = new Date();
+          const day = String(now.getDate()).padStart(2, '0');
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const month = monthNames[now.getMonth()];
+          const hours = String(now.getHours()).padStart(2, '0');
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          return `${day} ${month} ${hours}:${minutes}`;
+        }
 
         function addNewConversation() {
           // Get a random conversation or cycle through samples
@@ -1867,7 +2804,7 @@
           // Create new conversation row
           const newRow = document.createElement('div');
           newRow.className = 'list-row new-conversation';
-          newRow.style.cssText = 'grid-template-columns: 2fr 1fr; align-items: start; position: relative;';
+          newRow.style.cssText = 'grid-template-columns: 2fr 0.8fr 1fr; align-items: start; position: relative;';
           
           const conversationId = `#AA-${conversationCounter++}`;
           newRow.innerHTML = `
@@ -1877,13 +2814,11 @@
             <div style="align-self: start;">
               <span class="badge ${conversation.statusClass}">${conversation.status}</span>
             </div>
+            <div class="conversation-date">${formatConversationTime()}</div>
           `;
 
           // Insert at the top of the list
           conversationsList.insertBefore(newRow, conversationsList.firstChild);
-
-          // Scroll to top to show new conversation
-          conversationsList.scrollTop = 0;
 
           // Remove the 'new-conversation' class after animation completes
           setTimeout(() => {
@@ -1892,9 +2827,9 @@
             newRow.style.borderColor = '';
           }, 3000);
 
-          // Limit to max 10 conversations, remove oldest
+          // Limit to max 6 conversations, remove oldest
           const allRows = conversationsList.querySelectorAll('.list-row');
-          if (allRows.length > 10) {
+          if (allRows.length > 6) {
             conversationsList.removeChild(allRows[allRows.length - 1]);
           }
         }
@@ -1920,6 +2855,7 @@
       (function () {
         const chartLinePath = document.getElementById('chartLinePath');
         const chartLineResolvedPath = document.getElementById('chartLineResolvedPath');
+        const chartLineOngoingPath = document.getElementById('chartLineOngoingPath');
         const chartUpdateTime = document.getElementById('chartUpdateTime');
         const chartSLA = document.getElementById('chartSLA');
         const kpiTotalSessions = document.getElementById('kpiTotalSessions');
@@ -1927,31 +2863,58 @@
         const kpiPeakHourSessions = document.getElementById('kpiPeakHourSessions');
         const kpiAvgResponse = document.getElementById('kpiAvgResponse');
         const kpiAvgResponseTrendValue = document.getElementById('kpiAvgResponseTrendValue');
+        const kpiAvgBotResponse = document.getElementById('kpiAvgBotResponse');
+        const kpiAvgAgentResponse = document.getElementById('kpiAvgAgentResponse');
+        const kpiAvgAgentResolution = document.getElementById('kpiAvgAgentResolution');
         const kpiEscalation = document.getElementById('kpiEscalation');
         const kpiEscalationTrendValue = document.getElementById('kpiEscalationTrendValue');
+        const kpiUncategorizedChats = document.getElementById('kpiUncategorizedChats');
+        const customDaysInput = document.getElementById('customDaysInput');
 
-        if (!chartLinePath || !chartLineResolvedPath) return;
+        if (!chartLinePath || !chartLineResolvedPath || !chartLineOngoingPath) return;
 
-        // Base values
+        // Base values (total sessions can be overridden by intent hotspot totals)
         let baseTotalSessions = 8492;
         let baseSLA = 99.2;
         let baseAvgResponse = 1.3;
+        let baseAvgAgentResponse = 8.5;
+        let baseAvgAgentResolution = 26.0;
         let baseEscalation = 6.8;
         let updateSeconds = 32;
         let peakHourSessions = 1124;
+        // Custom range (in days) for "Custom" selection
+        if (customDaysInput) {
+          const v = Number(customDaysInput.value) || 14;
+          const clamped = Math.min(90, Math.max(1, v));
+          customDaysInput.value = String(clamped);
+          window.itAssistCustomDays = clamped;
+        } else {
+          window.itAssistCustomDays = window.itAssistCustomDays || 14;
+        }
 
         // Generate random data points for chart
-        function generateChartPath(isResolved = false) {
+        // Returns { path: string, points: array, averageY: number }
+        function generateChartPath(type = "new") {
           // Create 8 data points for smooth curve
           const numPoints = 8;
           const points = [];
           
           // Base Y values - lower Y = higher on chart (0 is top, 300 is bottom)
-          // Resolved should be higher (more visible) showing more resolved items
-          // Sessions (red): 80-150 (lower on chart)
-          // Resolved (green): 30-100 (higher on chart, showing more volume)
-          const baseMin = isResolved ? 30 : 80;
-          const baseMax = isResolved ? 100 : 150;
+          // Convert Y to count: count = (300 - y) / 300 * 2000
+          // Resolved (green): highest counts, top area Y (30-80) = 1467-1800 counts
+          // New (red): medium-high counts, middle Y (100-170) = 867-1333 counts  
+          // On Going (dark orange): medium counts, lower Y (180-250) = 333-800 counts
+          let baseMin, baseMax;
+          if (type === "resolved") {
+            baseMin = 30;
+            baseMax = 80;
+          } else if (type === "ongoing") {
+            baseMin = 180;
+            baseMax = 250;
+          } else { // "new"
+            baseMin = 100;
+            baseMax = 170;
+          }
           
           for (let i = 0; i <= numPoints; i++) {
             const x = (i * 400) / numPoints;
@@ -1960,22 +2923,36 @@
             const progress = i / numPoints;
             const wave = Math.sin(progress * Math.PI * 2) * 0.3;
             const trend = progress * 0.2; // Slight upward trend
-            // Resolved has less variation to show more consistent higher volume
-            const random = isResolved 
-              ? (Math.random() - 0.5) * 20 
-              : (Math.random() - 0.5) * 30;
+            
+            let random;
+            if (type === "resolved") {
+              random = (Math.random() - 0.5) * 15;
+            } else if (type === "ongoing") {
+              random = (Math.random() - 0.5) * 20;
+            } else {
+              random = (Math.random() - 0.5) * 25;
+            }
             
             let y = baseMin + (baseMax - baseMin) * (0.3 + progress * 0.4 + wave) + random;
-            // Keep within visible range - resolved: 20-110 (higher), sessions: 70-160 (lower)
-            y = isResolved 
-              ? Math.max(20, Math.min(110, y))
-              : Math.max(70, Math.min(160, y));
+            
+            // Keep within visible range - ensure distinct separation with clear gaps
+            if (type === "resolved") {
+              y = Math.max(25, Math.min(85, y));
+            } else if (type === "ongoing") {
+              y = Math.max(175, Math.min(260, y));
+            } else {
+              y = Math.max(95, Math.min(175, y));
+            }
             
             points.push({ x, y });
           }
 
-          // Create smooth cubic bezier curve
-          let path = `M0 ${points[0].y}`;
+          // Calculate average Y (higher Y = lower count)
+          const averageY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
+          // Create smooth cubic bezier curve for the top line
+          let topLinePath = `M0 ${points[0].y}`;
+          let fillPath = `M0 ${points[0].y}`;
           
           for (let i = 1; i < points.length; i++) {
             const prev = points[i - 1];
@@ -1988,45 +2965,164 @@
             const cp2x = curr.x - (next.x - curr.x) / 3;
             const cp2y = curr.y;
             
-            path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${curr.x} ${curr.y}`;
+            const curveSegment = ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${curr.x} ${curr.y}`;
+            topLinePath += curveSegment;
+            fillPath += curveSegment;
           }
           
           // Close path to create filled area chart
-          path += ` L 400 300 L 0 300 Z`;
+          fillPath += ` L 400 300 L 0 300 Z`;
           
-          return path;
+          return { path: fillPath, topLinePath, points, averageY };
         }
 
         function updateChart() {
-          // Generate new paths
-          const sessionsPath = generateChartPath(false);
-          const resolvedPath = generateChartPath(true);
+          // Generate new paths for all three types
+          const newData = generateChartPath("new");
+          const resolvedData = generateChartPath("resolved");
+          const ongoingData = generateChartPath("ongoing");
 
-          // Update SVG paths directly with smooth transition
-          chartLinePath.style.transition = 'd 0.8s ease-in-out';
-          chartLineResolvedPath.style.transition = 'd 0.8s ease-in-out';
-          
-          chartLinePath.setAttribute('d', sessionsPath);
-          chartLineResolvedPath.setAttribute('d', resolvedPath);
+          // Calculate average Y values (higher Y = lower count)
+          // The line with the highest averageY has the least count and should be on top
+          const dataArray = [
+            { element: chartLinePath, data: newData, type: "new" },
+            { element: chartLineResolvedPath, data: resolvedData, type: "resolved" },
+            { element: chartLineOngoingPath, data: ongoingData, type: "ongoing" }
+          ];
 
-          // Update KPI values with small variations
-          const sessionsChange = Math.floor((Math.random() - 0.4) * 200); // -80 to +120
-          baseTotalSessions = Math.max(8000, baseTotalSessions + sessionsChange);
+          // Sort by averageY (ascending) - lowest Y (most count) first, highest Y (least count) last
+          // In SVG, later elements in DOM are rendered on top
+          // So we want: most count first (rendered bottom), least count last (rendered top)
+          dataArray.sort((a, b) => a.data.averageY - b.data.averageY);
+
+          // Get the SVG container
+          const svg = document.getElementById('chartSVG');
+          const yAxisLabels = document.getElementById('yAxisLabels');
+          const xAxisLabels = document.getElementById('xAxisLabels');
+
+          // Update path data first
+          dataArray.forEach((item) => {
+            item.element.setAttribute('d', item.data.path);
+            item.element.style.transition = 'd 0.8s ease-in-out';
+          });
+
+          // Reorder DOM elements: SVG renders in document order (later = on top)
+          // So we want the element with least count (highest averageY) to be last in DOM
+          // Remove all paths from DOM
+          dataArray.forEach((item) => {
+            if (item.element.parentNode) {
+              item.element.parentNode.removeChild(item.element);
+            }
+          });
+
+          // Re-insert paths: SVG renders in document order (later elements = on top)
+          // Array is sorted with most count (lowest averageY) first, least count (highest averageY) last
+          // Inserting sequentially means: first inserted = bottom layer, last inserted = top layer
+          // So least count (orange) will be on top
+          dataArray.forEach((item) => {
+            // Insert before xAxisLabels so paths are below axis labels
+            svg.insertBefore(item.element, xAxisLabels);
+          });
+
+          // Update X-axis labels based on selected time range
+          const activeRangeButton = document.querySelector('#timeRangeFilters .chip-primary');
+          const activeRange = activeRangeButton ? activeRangeButton.getAttribute('data-range') : '24h';
+          if (xAxisLabels) {
+            xAxisLabels.innerHTML = '';
+            const textPositions = [0, 100, 200, 300, 380];
+            let labels = [];
+            if (activeRange === '24h') {
+              // Hour labels
+              labels = ['00:00', '06:00', '12:00', '18:00', '24:00'];
+            } else {
+              // Date labels for 7d / 30d / custom
+              let daysBack;
+              if (activeRange === '7d') {
+                daysBack = 6;
+              } else if (activeRange === '30d') {
+                daysBack = 29;
+              } else {
+                // Custom: use global custom days (clamped 1-90)
+                const cd = Number(window.itAssistCustomDays) || 14;
+                daysBack = Math.min(90, Math.max(1, cd)) - 1;
+              }
+              const now = new Date();
+              const mytOffsetMinutes = 8 * 60;
+              const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+              const mytNow = new Date(utc + mytOffsetMinutes * 60000);
+              const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              const step = Math.floor(daysBack / 4) || 1;
+              const indices = [0, step, step * 2, step * 3, daysBack];
+              labels = indices.map((idx) => {
+                const d = new Date(mytNow);
+                d.setDate(d.getDate() - (daysBack - idx));
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = monthNamesShort[d.getMonth()];
+                return `${day} ${month}`;
+              });
+            }
+
+            labels.forEach((labelText, idx) => {
+              const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              textEl.setAttribute('x', textPositions[idx]);
+              textEl.setAttribute('y', '290');
+              textEl.setAttribute('class', 'axis-label');
+              textEl.setAttribute('font-size', '8');
+              textEl.textContent = labelText;
+              xAxisLabels.appendChild(textEl);
+            });
+          }
+
+          // Update KPI values
+          // Total sessions: if intent hotspot totals are available, use them as the source of truth
+          let sessionsChange = 0;
+          if (window.itAssistTotalSessions && Number.isFinite(window.itAssistTotalSessions)) {
+            baseTotalSessions = window.itAssistTotalSessions;
+          } else {
+            // Fallback: small random variation around base
+            sessionsChange = Math.floor((Math.random() - 0.4) * 200); // -80 to +120
+            baseTotalSessions = Math.max(8000, baseTotalSessions + sessionsChange);
+          }
           const sessionsFormatted = baseTotalSessions.toLocaleString();
           kpiTotalSessions.textContent = sessionsFormatted;
           
-          const trendPercent = ((sessionsChange / (baseTotalSessions - sessionsChange)) * 100).toFixed(1);
+          const trendPercent = baseTotalSessions > 0
+            ? ((sessionsChange / Math.max(1, baseTotalSessions - sessionsChange)) * 100).toFixed(1)
+            : '0.0';
           kpiTotalSessionsTrendValue.textContent = `${sessionsChange >= 0 ? '+' : ''}${trendPercent}%`;
 
           // Update peak hour sessions
           peakHourSessions = Math.max(900, peakHourSessions + Math.floor((Math.random() - 0.5) * 100));
           kpiPeakHourSessions.textContent = `${peakHourSessions.toLocaleString()} sessions`;
 
-          // Update average response time
+          // Update average response times
           const responseChange = (Math.random() - 0.5) * 0.3;
           baseAvgResponse = Math.max(0.8, Math.min(2.5, baseAvgResponse + responseChange));
-          kpiAvgResponse.textContent = `${baseAvgResponse.toFixed(1)}s`;
-          kpiAvgResponseTrendValue.textContent = `${responseChange >= 0 ? '+' : ''}${responseChange.toFixed(1)}s`;
+          if (kpiAvgResponse) {
+            kpiAvgResponse.textContent = `${baseAvgResponse.toFixed(1)}s`;
+          }
+          if (kpiAvgResponseTrendValue) {
+            kpiAvgResponseTrendValue.textContent = `${responseChange >= 0 ? '+' : ''}${responseChange.toFixed(1)}s`;
+          }
+
+          // Bot initial response mirrors main avg response (even if main panel is hidden)
+          if (kpiAvgBotResponse) {
+            kpiAvgBotResponse.textContent = `${baseAvgResponse.toFixed(1)}s`;
+          }
+
+          // Agent first reply (intents 6 + 9): generally slower than bot
+          const agentReplyChange = (Math.random() - 0.5) * 1.2; // seconds
+          baseAvgAgentResponse = Math.max(5.0, Math.min(20.0, baseAvgAgentResponse + agentReplyChange));
+          if (kpiAvgAgentResponse) {
+            kpiAvgAgentResponse.textContent = `${baseAvgAgentResponse.toFixed(1)}s`;
+          }
+
+          // Agent resolution time: longest of the three
+          const agentResChange = (Math.random() - 0.5) * 3.0;
+          baseAvgAgentResolution = Math.max(10.0, Math.min(60.0, baseAvgAgentResolution + agentResChange));
+          if (kpiAvgAgentResolution) {
+            kpiAvgAgentResolution.textContent = `${baseAvgAgentResolution.toFixed(1)}s`;
+          }
 
           // Update escalation rate
           const escalationChange = (Math.random() - 0.5) * 0.5;
@@ -2038,6 +3134,11 @@
           const slaChange = (Math.random() - 0.5) * 0.2;
           baseSLA = Math.max(98.5, Math.min(99.9, baseSLA + slaChange));
           chartSLA.textContent = `SLA ${baseSLA.toFixed(1)}%`;
+
+          // Update Total Uncategorized Chats KPI if available
+          if (kpiUncategorizedChats && typeof window.itAssistUncategorizedChats === 'number') {
+            kpiUncategorizedChats.textContent = window.itAssistUncategorizedChats.toLocaleString();
+          }
 
           // Reset update timer
           updateSeconds = 0;
@@ -2053,11 +3154,65 @@
           }
         }
 
+        // Time range filter handling
+        const timeRangeFilters = document.getElementById('timeRangeFilters');
+        if (timeRangeFilters) {
+          timeRangeFilters.addEventListener('click', (event) => {
+            const target = event.target.closest('.chip');
+            if (!target) return;
+
+            const range = target.getAttribute('data-range');
+
+            // When custom is selected, read from numeric selector
+            if (range === 'custom' && customDaysInput) {
+              let n = Number(customDaysInput.value) || window.itAssistCustomDays || 14;
+              n = Math.min(90, Math.max(1, n));
+              customDaysInput.value = String(n);
+              window.itAssistCustomDays = n;
+            }
+
+            // Toggle active chip
+            document.querySelectorAll('#timeRangeFilters .chip').forEach((btn) => {
+              btn.classList.remove('chip-primary');
+            });
+            target.classList.add('chip-primary');
+
+            // Refresh chart with new X-axis labels
+            updateChart();
+          });
+        }
+
+        // Update custom days when the numeric selector changes
+        if (customDaysInput) {
+          customDaysInput.addEventListener('change', () => {
+            let n = Number(customDaysInput.value) || window.itAssistCustomDays || 14;
+            n = Math.min(90, Math.max(1, n));
+            customDaysInput.value = String(n);
+            window.itAssistCustomDays = n;
+
+            const activeRangeButton = document.querySelector('#timeRangeFilters .chip-primary');
+            if (activeRangeButton && activeRangeButton.getAttribute('data-range') === 'custom') {
+              updateChart();
+            }
+          });
+        }
+
+        // Helper to get dashboard refresh interval (ms) from localStorage
+        function getDashboardRefreshMs(defaultSeconds) {
+          const stored = window.localStorage.getItem('itAssistDashboardRefreshSeconds');
+          const seconds = Number(stored);
+          if (!Number.isFinite(seconds) || seconds <= 0) {
+            return defaultSeconds * 1000;
+          }
+          const clamped = Math.min(300, Math.max(1, seconds));
+          return clamped * 1000;
+        }
+
         // Initialize chart immediately with visible data
         updateChart();
         
-        // Update chart every 5 seconds
-        setInterval(updateChart, 5000);
+        // Update chart at configured interval (keep data moving, labels depend on active range)
+        setInterval(updateChart, getDashboardRefreshMs(5));
         
         // Update timestamp every second
         setInterval(updateTimestamp, 1000);
@@ -2083,13 +3238,14 @@
           
           let hours = mytTime.getHours();
           const minutes = String(mytTime.getMinutes()).padStart(2, '0');
+          const seconds = String(mytTime.getSeconds()).padStart(2, '0');
           const ampm = hours >= 12 ? 'PM' : 'AM';
           hours = hours % 12;
           hours = hours ? hours : 12; // the hour '0' should be '12'
           const hoursStr = String(hours).padStart(2, '0');
           
           // Using bullet separator (•) for clear visual separation between date and time
-          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes} ${ampm} MYT`;
+          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes}:${seconds} ${ampm} MYT`;
         }
 
         // Update immediately and then every second

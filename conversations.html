@@ -180,6 +180,12 @@
         z-index: 100;
       }
 
+      @media (max-width: 768px) {
+        .sidebar {
+          z-index: 10000;
+        }
+      }
+
       .brand {
         display: flex;
         align-items: center;
@@ -436,6 +442,10 @@
         gap: 18px;
       }
 
+      .top-bar .title-block {
+        flex: 1;
+      }
+
       .title-block {
         display: flex;
         flex-direction: column;
@@ -464,10 +474,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 4px;
+        padding: 6px 4px;
         border-radius: 6px;
         background: rgba(241, 245, 249, 0.9);
         border: 1px solid rgba(148, 163, 184, 0.35);
+        height: fit-content;
+        min-height: 34px;
       }
 
       .datetime-display {
@@ -496,6 +508,16 @@
       .chip-primary {
         background: radial-gradient(circle at top left, #ef4444, #b91c1c);
         color: #fef2f2;
+      }
+
+      #customDaysInput {
+        width: 56px;
+        font-size: 0.75rem;
+        padding: 3px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--aa-text);
       }
 
       .search-input {
@@ -530,6 +552,59 @@
         border-radius: 6px;
         border: 1px solid rgba(148, 163, 184, 0.5);
         color: var(--aa-text-muted);
+      }
+
+      /* Mobile hamburger button */
+      .mobile-hamburger {
+        display: none;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.08);
+        padding: 8px;
+        font-size: 1.2rem;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--aa-text);
+        transition: all 0.18s ease;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        z-index: 1000;
+      }
+
+      .mobile-hamburger:hover {
+        background: rgba(15, 23, 42, 0.1);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: scale(1.05);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: rgba(148, 163, 184, 0.3);
+      }
+
+      :root[data-theme="dark"] .mobile-hamburger:hover {
+        background: rgba(31, 41, 55, 0.6);
+        border-color: rgba(148, 163, 184, 0.5);
+      }
+
+      /* Sidebar overlay for mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       /* Sidebar toggle button */
@@ -645,6 +720,235 @@
         gap: 8px;
         font-size: 0.75rem;
         color: var(--aa-text-muted);
+      }
+
+      .btn-print-preview {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--aa-border-subtle);
+        background: var(--aa-bg-card);
+        color: var(--aa-text);
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-print-preview:hover {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: var(--aa-red);
+        transform: translateY(-1px);
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--aa-bg-card);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        max-width: 95vw;
+        max-height: 95vh;
+        width: 1200px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .modal-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--aa-border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--aa-bg-elevated);
+      }
+
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .modal-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-modal {
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--aa-border-subtle);
+        background: var(--aa-bg-card);
+        color: var(--aa-text);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-modal:hover {
+        background: rgba(148, 163, 184, 0.1);
+      }
+
+      .btn-modal-primary {
+        background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+        color: #fef2f2;
+        border-color: transparent;
+      }
+
+      .btn-modal-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      .btn-modal-close {
+        padding: 6px;
+        border: none;
+        background: transparent;
+        color: var(--aa-text-muted);
+        font-size: 1.2rem;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .btn-modal-close:hover {
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--aa-text);
+      }
+
+      .modal-body {
+        padding: 22px;
+        overflow: auto;
+        flex: 1;
+        background: #ffffff;
+      }
+
+      .printable-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        background: #ffffff;
+      }
+
+      .printable-table thead {
+        background: #f3f4f6;
+      }
+
+      .printable-table th,
+      .printable-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border: 1px solid #e5e7eb;
+        color: #1e293b;
+      }
+
+      .printable-table th {
+        font-weight: 600;
+        color: #1e293b;
+        background: #f3f4f6;
+      }
+
+      .printable-table td {
+        color: #1e293b;
+        background: #ffffff;
+      }
+
+      .printable-table tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+
+      .printable-table tbody tr:nth-child(even) td {
+        background: #f9fafb;
+      }
+
+      .printable-table tbody tr:hover {
+        background: #f3f4f6;
+      }
+
+      .printable-table tbody tr:hover td {
+        background: #f3f4f6;
+      }
+
+      @media print {
+        .modal-overlay {
+          position: static;
+          background: transparent;
+          backdrop-filter: none;
+        }
+
+        .modal-content {
+          max-width: 100%;
+          max-height: 100%;
+          box-shadow: none;
+          border-radius: 0;
+        }
+
+        .modal-header,
+        .modal-actions {
+          display: none;
+        }
+
+        .modal-body {
+          padding: 0;
+        }
+
+        .printable-table {
+          font-size: 0.75rem;
+        }
+      }
+
+      :root[data-theme="dark"] .modal-body {
+        background: #ffffff;
+      }
+
+      :root[data-theme="dark"] .printable-table {
+        background: #ffffff;
+      }
+
+      :root[data-theme="dark"] .printable-table th {
+        background: #f3f4f6;
+        color: #1e293b;
+      }
+
+      :root[data-theme="dark"] .printable-table td {
+        background: #ffffff;
+        color: #1e293b;
+      }
+
+      :root[data-theme="dark"] .printable-table tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+
+      :root[data-theme="dark"] .printable-table tbody tr:nth-child(even) td {
+        background: #f9fafb;
+        color: #1e293b;
+      }
+
+      :root[data-theme="dark"] .printable-table tbody tr:hover td {
+        background: #f3f4f6;
+        color: #1e293b;
       }
 
       .pill {
@@ -947,6 +1251,12 @@
         background: rgba(15, 23, 42, 0.92);
       }
 
+      :root[data-theme="dark"] #customDaysInput {
+        background: rgba(15, 23, 42, 0.96);
+        border-color: rgba(148, 163, 184, 0.7);
+        color: var(--aa-text);
+      }
+
       :root[data-theme="dark"] .theme-toggle {
         background: rgba(15, 23, 42, 0.95);
         color: var(--aa-text-muted);
@@ -977,9 +1287,59 @@
         .app-shell {
           grid-template-columns: minmax(0, 1fr) !important;
         }
+      }
+
+      @media (max-width: 768px) {
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr) !important;
+        }
+
+        .mobile-hamburger {
+          display: flex !important;
+        }
 
         .app-shell .sidebar {
-          display: none;
+          display: flex !important;
+          position: fixed !important;
+          left: -260px !important;
+          top: 0 !important;
+          bottom: 0 !important;
+          z-index: 10000 !important;
+          transition: left 0.3s ease !important;
+          width: 260px !important;
+          max-width: 85vw !important;
+          height: 100vh !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+          will-change: left;
+        }
+
+        .app-shell.sidebar-mobile-open .sidebar {
+          left: 0 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .sidebar-overlay {
+          display: block !important;
+          z-index: 9999 !important;
+        }
+
+        .top-bar-right {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+          width: 100%;
+        }
+
+        .datetime-display {
+          width: 100%;
+        }
+
+        .top-filter-group {
+          width: 100%;
         }
       }
 
@@ -1084,8 +1444,12 @@
         </div>
       </aside>
 
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
       <main class="main">
         <header class="top-bar">
+          <button class="mobile-hamburger" id="mobileHamburger" type="button" aria-label="Toggle sidebar">
+            <span>☰</span>
+          </button>
           <div class="title-block">
             <div class="page-title">Conversations</div>
             <div class="page-subtitle">
@@ -1095,18 +1459,14 @@
           </div>
 
           <div class="top-bar-right">
-            <div class="datetime-display" id="datetimeDisplay"></div>
-            <div class="top-filter-group">
-              <button class="chip chip-primary">Last 24h</button>
-              <button class="chip">7 days</button>
-              <button class="chip">30 days</button>
-            </div>
-
-            <div class="search-input">
-              <span>🔍</span>
-              <input placeholder="Search conversation ID or user..." />
-              <span class="kbd">⌘K</span>
-            </div>
+          <div class="datetime-display" id="datetimeDisplay"></div>
+          <div class="top-filter-group" id="timeRangeFilters">
+            <button class="chip chip-primary" data-range="24h">Last 24h</button>
+            <button class="chip" data-range="7d">7 days</button>
+            <button class="chip" data-range="30d">30 days</button>
+            <button class="chip" data-range="custom">Custom</button>
+            <input id="customDaysInput" type="number" min="1" max="90" value="14" />
+          </div>
           </div>
         </header>
 
@@ -1139,6 +1499,10 @@
             </div>
             <div class="card-header-meta">
               <span>Updated 15 seconds ago</span>
+              <button class="btn-print-preview" id="printPreviewBtn" type="button" title="Print Preview">
+                <span>🖨️</span>
+                <span>Print Preview</span>
+              </button>
             </div>
           </div>
 
@@ -1480,6 +1844,33 @@
       </main>
     </div>
 
+    <!-- Print Preview Modal -->
+    <div class="modal-overlay" id="printPreviewModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Print Preview - Conversation History</div>
+          <div class="modal-actions">
+            <button class="btn-modal btn-modal-primary" id="downloadPdfBtn" type="button">
+              <span>📄</span>
+              <span>Download PDF</span>
+            </button>
+            <button class="btn-modal btn-modal-primary" id="exportCsvBtn" type="button">
+              <span>📊</span>
+              <span>Export CSV</span>
+            </button>
+            <button class="btn-modal" id="printBtn" type="button">
+              <span>🖨️</span>
+              <span>Print</span>
+            </button>
+            <button class="btn-modal-close" id="closeModalBtn" type="button" aria-label="Close">×</button>
+          </div>
+        </div>
+        <div class="modal-body" id="printableContent">
+          <!-- Printable content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
     <script>
       // Remove unused "theme" key from localStorage (created by Tailwind CDN, not used by this app)
       if (window.localStorage.getItem('theme')) {
@@ -1603,23 +1994,125 @@
         const appShell = document.querySelector(".app-shell");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+        const mobileHamburger = document.getElementById("mobileHamburger");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         const storedSidebarState = window.localStorage.getItem("itAssistSidebar");
 
-        // Initialize sidebar state - expanded by default
-        appShell.classList.remove("sidebar-hidden");
-        if (storedSidebarState === "hidden") {
-          appShell.classList.add("sidebar-hidden");
+        // Check if mobile view
+        function isMobile() {
+          return window.innerWidth <= 768;
         }
 
-        sidebarToggle.addEventListener("click", () => {
-          const isHidden = appShell.classList.contains("sidebar-hidden");
-          if (isHidden) {
-            appShell.classList.remove("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "visible");
-          } else {
-            appShell.classList.add("sidebar-hidden");
-            window.localStorage.setItem("itAssistSidebar", "hidden");
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+          if (!appShell) {
+            console.error("appShell not found!");
+            return;
           }
+          const isOpen = appShell.classList.contains("sidebar-mobile-open");
+          console.log("toggleMobileSidebar called, isOpen:", isOpen);
+          if (isOpen) {
+            appShell.classList.remove("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.remove("active");
+            }
+            console.log("Sidebar closed");
+          } else {
+            appShell.classList.add("sidebar-mobile-open");
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add("active");
+            }
+            console.log("Sidebar opened, class added:", appShell.classList.contains("sidebar-mobile-open"));
+          }
+        }
+
+        // Close mobile sidebar
+        function closeMobileSidebar() {
+          appShell.classList.remove("sidebar-mobile-open");
+          if (sidebarOverlay) {
+            sidebarOverlay.classList.remove("active");
+          }
+        }
+
+        // Initialize sidebar state - expanded by default (desktop only)
+        if (!isMobile()) {
+          appShell.classList.remove("sidebar-hidden");
+          if (storedSidebarState === "hidden") {
+            appShell.classList.add("sidebar-hidden");
+          }
+        } else {
+          // On mobile, sidebar is closed by default (off-screen)
+          // Don't call closeMobileSidebar() as it might interfere with initial state
+          // The sidebar starts at left: -260px which is correct
+        }
+
+        // Desktop sidebar toggle
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", () => {
+            if (isMobile()) {
+              toggleMobileSidebar();
+            } else {
+              const isHidden = appShell.classList.contains("sidebar-hidden");
+              if (isHidden) {
+                appShell.classList.remove("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "visible");
+              } else {
+                appShell.classList.add("sidebar-hidden");
+                window.localStorage.setItem("itAssistSidebar", "hidden");
+              }
+            }
+          });
+        }
+
+        // Mobile hamburger toggle
+        if (mobileHamburger) {
+          mobileHamburger.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Mobile hamburger clicked");
+            console.log("Current sidebar classes:", appShell.className);
+            console.log("Is mobile:", isMobile());
+            toggleMobileSidebar();
+            console.log("After toggle, sidebar classes:", appShell.className);
+            console.log("Sidebar element:", document.querySelector(".sidebar"));
+            const sidebar = document.querySelector(".sidebar");
+            if (sidebar) {
+              console.log("Sidebar computed style left:", window.getComputedStyle(sidebar).left);
+              console.log("Sidebar display:", window.getComputedStyle(sidebar).display);
+              console.log("Sidebar visibility:", window.getComputedStyle(sidebar).visibility);
+              console.log("Sidebar z-index:", window.getComputedStyle(sidebar).zIndex);
+            }
+          });
+        } else {
+          console.error("Mobile hamburger button not found!");
+        }
+
+        // Close sidebar when clicking overlay
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener("click", () => {
+            closeMobileSidebar();
+          });
+        }
+
+        // Close sidebar when clicking nav items on mobile
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            if (isMobile()) {
+              closeMobileSidebar();
+            }
+          });
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            if (!isMobile()) {
+              closeMobileSidebar();
+            }
+          }, 250);
         });
       })();
 
@@ -1671,7 +2164,7 @@
           const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
           const mytTime = new Date(utc + (mytOffset * 60000));
 
-          // Format: 01 Dec 2025 • 11:06 AM MYT (using bullet separator for better readability)
+          // Format: 01 Dec 2025 • 11:06:23 AM MYT (using bullet separator for better readability)
           const day = String(mytTime.getDate()).padStart(2, '0');
           const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
           const month = monthNames[mytTime.getMonth()];
@@ -1679,18 +2172,353 @@
           
           let hours = mytTime.getHours();
           const minutes = String(mytTime.getMinutes()).padStart(2, '0');
+          const seconds = String(mytTime.getSeconds()).padStart(2, '0');
           const ampm = hours >= 12 ? 'PM' : 'AM';
           hours = hours % 12;
           hours = hours ? hours : 12; // the hour '0' should be '12'
           const hoursStr = String(hours).padStart(2, '0');
           
           // Using bullet separator (•) for clear visual separation between date and time
-          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes} ${ampm} MYT`;
+          datetimeDisplay.textContent = `${day} ${month} ${year} • ${hoursStr}:${minutes}:${seconds} ${ampm} MYT`;
         }
 
-        // Update immediately and then every second
+        // Helper to get conversations refresh interval (seconds) from localStorage
+        function getConversationsRefreshMs(defaultSeconds) {
+          const stored = window.localStorage.getItem('itAssistConversationsRefreshSeconds');
+          const seconds = Number(stored);
+          if (!Number.isFinite(seconds) || seconds <= 0) {
+            return defaultSeconds * 1000;
+          }
+          const clamped = Math.min(300, Math.max(5, seconds));
+          return clamped * 1000;
+        }
+
+        // Update immediately and then at configured interval
         updateDateTime();
-        setInterval(updateDateTime, 1000);
+        setInterval(updateDateTime, getConversationsRefreshMs(60));
+      })();
+
+      // Time range selector (align with dashboard behavior)
+      (function () {
+        const timeRangeFilters = document.getElementById('timeRangeFilters');
+        const customDaysInput = document.getElementById('customDaysInput');
+
+        // Initialize custom days from input or fallback
+        if (customDaysInput) {
+          let v = Number(customDaysInput.value) || window.itAssistCustomDays || 14;
+          v = Math.min(90, Math.max(1, v));
+          customDaysInput.value = String(v);
+          window.itAssistCustomDays = v;
+        }
+
+        if (timeRangeFilters) {
+          timeRangeFilters.addEventListener('click', (event) => {
+            const target = event.target.closest('.chip');
+            if (!target) return;
+
+            const range = target.getAttribute('data-range');
+
+            if (range === 'custom' && customDaysInput) {
+              let n = Number(customDaysInput.value) || window.itAssistCustomDays || 14;
+              n = Math.min(90, Math.max(1, n));
+              customDaysInput.value = String(n);
+              window.itAssistCustomDays = n;
+            }
+
+            // Toggle active chip
+            document.querySelectorAll('#timeRangeFilters .chip').forEach((btn) => {
+              btn.classList.remove('chip-primary');
+            });
+            target.classList.add('chip-primary');
+
+            // (Optional) hook for future filtering based on range
+            // console.log('Selected range:', range, 'days:', window.itAssistCustomDays);
+          });
+        }
+
+        if (customDaysInput) {
+          customDaysInput.addEventListener('change', () => {
+            let n = Number(customDaysInput.value) || window.itAssistCustomDays || 14;
+            n = Math.min(90, Math.max(1, n));
+            customDaysInput.value = String(n);
+            window.itAssistCustomDays = n;
+          });
+        }
+      })();
+
+      // Print Preview Modal Functionality
+      (function () {
+        const printPreviewBtn = document.getElementById('printPreviewBtn');
+        const printPreviewModal = document.getElementById('printPreviewModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const printableContent = document.getElementById('printableContent');
+        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const printBtn = document.getElementById('printBtn');
+        const originalTable = document.querySelector('.table-wrapper table');
+
+        function generatePrintableTable() {
+          if (!originalTable) return '';
+
+          const thead = originalTable.querySelector('thead');
+          const tbody = originalTable.querySelector('tbody');
+          
+          let html = '<table class="printable-table">';
+          
+          // Header
+          if (thead) {
+            html += '<thead>';
+            const headerRows = thead.querySelectorAll('tr');
+            headerRows.forEach(row => {
+              html += '<tr>';
+              row.querySelectorAll('th').forEach(th => {
+                html += `<th>${th.textContent.trim()}</th>`;
+              });
+              html += '</tr>';
+            });
+            html += '</thead>';
+          }
+          
+          // Body
+          if (tbody) {
+            html += '<tbody>';
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+              html += '<tr>';
+              const cells = row.querySelectorAll('td');
+              cells.forEach((cell, index) => {
+                let cellText = '';
+                
+                // Extract text content based on cell structure
+                if (index === 0) {
+                  // Conversation ID column
+                  const idEl = cell.querySelector('.conversation-id');
+                  const previewEl = cell.querySelector('.conversation-preview');
+                  cellText = (idEl ? idEl.textContent.trim() : '') + 
+                            (previewEl ? ' - ' + previewEl.textContent.trim() : '');
+                } else if (index === 1) {
+                  // User column
+                  const nameEl = cell.querySelector('.user-name');
+                  const emailEl = cell.querySelector('.timestamp');
+                  cellText = (nameEl ? nameEl.textContent.trim() : '') + 
+                            (emailEl ? ' (' + emailEl.textContent.trim() + ')' : '');
+                } else if (index === 2) {
+                  // Channel column
+                  const badgeEl = cell.querySelector('.badge');
+                  cellText = badgeEl ? badgeEl.textContent.trim() : '';
+                } else if (index === 3) {
+                  // Intent column
+                  const intentEl = cell.querySelector('.intent-badge');
+                  cellText = intentEl ? intentEl.textContent.trim() : '';
+                } else if (index === 4) {
+                  // Status column
+                  const statusEl = cell.querySelector('.badge');
+                  cellText = statusEl ? statusEl.textContent.trim() : '';
+                } else {
+                  // Duration and Last Activity - direct text
+                  cellText = cell.textContent.trim();
+                }
+                
+                html += `<td>${cellText || ''}</td>`;
+              });
+              html += '</tr>';
+            });
+            html += '</tbody>';
+          }
+          
+          html += '</table>';
+          return html;
+        }
+
+        function openModal() {
+          if (!printPreviewModal || !printableContent) return;
+          
+          const tableHtml = generatePrintableTable();
+          printableContent.innerHTML = tableHtml;
+          printPreviewModal.classList.add('active');
+        }
+
+        function closeModal() {
+          if (printPreviewModal) {
+            printPreviewModal.classList.remove('active');
+          }
+        }
+
+        function downloadPDF() {
+          // Create a new window with printable content
+          const printWindow = window.open('', '_blank');
+          const tableHtml = generatePrintableTable();
+          
+          printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Conversation History - IT Assist</title>
+                <style>
+                  body {
+                    font-family: "Inter", system-ui, sans-serif;
+                    padding: 20px;
+                    margin: 0;
+                  }
+                  h1 {
+                    font-size: 1.5rem;
+                    margin-bottom: 20px;
+                    color: #1e293b;
+                  }
+                  table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.75rem;
+                    background: #ffffff;
+                  }
+                  thead {
+                    background: #f3f4f6;
+                  }
+                  th, td {
+                    padding: 10px 12px;
+                    text-align: left;
+                    border: 1px solid #e5e7eb;
+                  }
+                  th {
+                    font-weight: 600;
+                    color: #1e293b;
+                    background: #f3f4f6;
+                  }
+                  tbody tr:nth-child(even) {
+                    background: #f9fafb;
+                  }
+                  @media print {
+                    body { padding: 0; }
+                  }
+                </style>
+              </head>
+              <body>
+                <h1>Conversation History - IT Assist</h1>
+                <p>Generated on ${new Date().toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' })}</p>
+                ${tableHtml}
+              </body>
+            </html>
+          `);
+          
+          printWindow.document.close();
+          
+          // Wait for content to load, then trigger print
+          setTimeout(() => {
+            printWindow.print();
+            // Optionally close after print dialog
+            // printWindow.close();
+          }, 250);
+        }
+
+        function exportCSV() {
+          if (!originalTable) return;
+          
+          const thead = originalTable.querySelector('thead');
+          const tbody = originalTable.querySelector('tbody');
+          
+          let csv = [];
+          
+          // Headers
+          if (thead) {
+            const headerRow = [];
+            thead.querySelectorAll('th').forEach(th => {
+              headerRow.push(`"${th.textContent.trim()}"`);
+            });
+            csv.push(headerRow.join(','));
+          }
+          
+          // Rows
+          if (tbody) {
+            tbody.querySelectorAll('tr').forEach(row => {
+              const rowData = [];
+              row.querySelectorAll('td').forEach((cell, index) => {
+                let cellText = '';
+                
+                if (index === 0) {
+                  const idEl = cell.querySelector('.conversation-id');
+                  const previewEl = cell.querySelector('.conversation-preview');
+                  cellText = (idEl ? idEl.textContent.trim() : '') + 
+                            (previewEl ? ' - ' + previewEl.textContent.trim() : '');
+                } else if (index === 1) {
+                  const nameEl = cell.querySelector('.user-name');
+                  const emailEl = cell.querySelector('.timestamp');
+                  cellText = (nameEl ? nameEl.textContent.trim() : '') + 
+                            (emailEl ? ' (' + emailEl.textContent.trim() + ')' : '');
+                } else if (index === 2) {
+                  const badgeEl = cell.querySelector('.badge');
+                  cellText = badgeEl ? badgeEl.textContent.trim() : '';
+                } else if (index === 3) {
+                  const intentEl = cell.querySelector('.intent-badge');
+                  cellText = intentEl ? intentEl.textContent.trim() : '';
+                } else if (index === 4) {
+                  const statusEl = cell.querySelector('.badge');
+                  cellText = statusEl ? statusEl.textContent.trim() : '';
+                } else {
+                  cellText = cell.textContent.trim();
+                }
+                
+                // Escape quotes and wrap in quotes
+                cellText = cellText.replace(/"/g, '""');
+                rowData.push(`"${cellText}"`);
+              });
+              csv.push(rowData.join(','));
+            });
+          }
+          
+          // Create download
+          const csvContent = csv.join('\n');
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          
+          link.setAttribute('href', url);
+          link.setAttribute('download', `conversation-history-${new Date().toISOString().split('T')[0]}.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        function printModal() {
+          window.print();
+        }
+
+        // Event listeners
+        if (printPreviewBtn) {
+          printPreviewBtn.addEventListener('click', openModal);
+        }
+
+        if (closeModalBtn) {
+          closeModalBtn.addEventListener('click', closeModal);
+        }
+
+        if (downloadPdfBtn) {
+          downloadPdfBtn.addEventListener('click', downloadPDF);
+        }
+
+        if (exportCsvBtn) {
+          exportCsvBtn.addEventListener('click', exportCSV);
+        }
+
+        if (printBtn) {
+          printBtn.addEventListener('click', printModal);
+        }
+
+        // Close modal on overlay click
+        if (printPreviewModal) {
+          printPreviewModal.addEventListener('click', (e) => {
+            if (e.target === printPreviewModal) {
+              closeModal();
+            }
+          });
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && printPreviewModal && printPreviewModal.classList.contains('active')) {
+            closeModal();
+          }
+        });
       })();
     </script>
   </body>
