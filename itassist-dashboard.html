@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Assist Dashboard | AirAsia</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Noto Sans for that AirAsia look -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- PapaParse for CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <!-- html2canvas for canvas to image conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2pdf for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --aa-red: #DA291C;
+            --aa-black: #000000;
+            --aa-grey: #F2F2F2;
+        }
+        
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .aa-red-bg { background-color: var(--aa-red); }
+        .aa-red-text { color: var(--aa-red); }
+        
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            border: 1px solid #334155;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            border-color: #475569;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            border-color: #475569;
+        }
+
+        .metric-card.card-red::before {
+            background: linear-gradient(90deg, #DA291C 0%, rgba(218, 41, 28, 0.5) 100%);
+        }
+
+        .metric-card.card-black::before {
+            background: linear-gradient(90deg, #64748b 0%, rgba(100, 116, 139, 0.5) 100%);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover .metric-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Tile icons - smaller and consistent styling with light blue pastel tone */
+        .tile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+        }
+
+        .metric-card:hover .tile-icon {
+            transform: scale(1.08);
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35);
+        }
+
+        /* Progress bar styling for tiles */
+        .tile-progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .tile-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease, background-color 0.3s ease;
+        }
+
+        .tile-progress-bar.progress-green {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .tile-progress-bar.progress-amber {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .tile-progress-bar.progress-red {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 1rem;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(218, 41, 28, 0.2);
+            border-top: 4px solid #DA291C;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #e2e8f0;
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .loading-subtext {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Utility */
+        .hidden-nav {
+            display: none !important;
+        }
+
+        /* Print Preview Modal */
+        .print-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+        }
+
+        .print-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .print-modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border: none;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .print-modal-header {
+            background: #1e293b;
+            color: white;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            gap: 1rem;
+        }
+
+        .print-modal-actions-inline {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .print-preview-content {
+            padding: 2rem;
+            background: white;
+            color: #000;
+        }
+
+        .print-preview-content .metric-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #000;
+        }
+
+        .print-preview-content .metric-value {
+            background: linear-gradient(135deg, #000000 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .print-preview-content .card {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #000;
+        }
+
+        .print-preview-content h1,
+        .print-preview-content h3 {
+            color: #000;
+        }
+
+        .print-preview-content .text-white {
+            color: #000 !important;
+        }
+
+        .print-preview-content .text-gray-400,
+        .print-preview-content .text-gray-300 {
+            color: #666 !important;
+        }
+
+        .print-preview-content .tile-icon {
+            background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%) !important;
+            color: white !important;
+        }
+
+        .print-preview-content .tile-progress-container {
+            background-color: #e5e7eb !important;
+        }
+
+        .print-preview-content .tile-progress-bar.progress-green {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+        }
+
+        .print-preview-content .tile-progress-bar.progress-amber {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%) !important;
+        }
+
+        .print-preview-content .tile-progress-bar.progress-red {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;
+        }
+
+        .print-preview-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .print-preview-content table thead {
+            background-color: #f8f9fa;
+        }
+
+        .print-preview-content table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #dee2e6;
+            color: #000;
+        }
+
+        .print-preview-content table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #dee2e6;
+            color: #000;
+        }
+
+        .print-preview-content table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .print-preview-content table tbody tr:last-child {
+            background-color: #e9ecef;
+            font-weight: bold;
+            border-top: 2px solid #dee2e6;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-preview-content,
+            .print-preview-content * {
+                visibility: visible;
+            }
+            .print-preview-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading Dashboard Data</div>
+        <div class="loading-subtext">Please wait while we process your data...</div>
+    </div>
+
+    <!-- Navigation / Header -->
+    <nav class="bg-slate-800 shadow-lg fixed w-full z-10 top-0 border-b border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img class="h-10 w-auto" src="https://i.imgur.com/tvZMJ0I.png" alt="AirAsia Logo">
+                        <div class="ml-4 border-l-2 border-slate-600 pl-4 leading-tight">
+                            <h1 class="text-xl font-bold tracking-tight text-white">IT Assist Dashboard</h1>
+                            <p class="text-xs text-gray-300 mt-1">Welcome to the IT Assist Analytics Dashboard</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="printPreviewBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-medium transition duration-300 flex items-center shadow-lg transform hover:scale-105">
+                        <i class="fas fa-print mr-2"></i> Print Preview
+                    </button>
+                    <label for="jsonInput" class="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-medium transition duration-300 flex items-center shadow-lg transform hover:scale-105 hidden">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i> Upload JSON
+                    </label>
+                    <input type="file" id="jsonInput" accept=".json" class="hidden">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-10">
+        
+        <!-- Dashboard Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Date Range Card -->
+            <div class="metric-card card-red p-8">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <p class="metric-label">Date Range</p>
+                        <div class="space-y-3 mt-3">
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 mb-1">Date From</p>
+                                <p class="text-lg font-semibold text-white" id="dateFrom">-</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 mb-1">Date To</p>
+                                <p class="text-lg font-semibold text-white" id="dateTo">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-icon bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Messages Card -->
+            <div class="metric-card card-black p-8">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <p class="metric-label">Total Messages</p>
+                        <h2 class="metric-value" id="totalMessages">0</h2>
+                    </div>
+                    <div class="metric-icon bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-lg">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm text-gray-400">
+                    <i class="fas fa-exchange-alt mr-1 text-blue-400"></i>
+                    <span>All conversations</span>
+                </div>
+            </div>
+
+            <!-- Handed over to IT Assist Card -->
+            <div class="metric-card card-red p-8">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <p class="metric-label">Handed over to IT Assist</p>
+                        <h2 class="metric-value" id="handedOver">0</h2>
+                    </div>
+                    <div class="metric-icon bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm text-gray-400">
+                    <i class="fas fa-user-tie mr-1 text-purple-400"></i>
+                    <span>Escalated cases</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traffic Report -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Traffic Report</h3>
+                    <p class="text-sm text-gray-400 mt-1">Weekly comparison of Total Messages vs Handed over to IT Assist</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <span class="text-sm text-gray-300">Total Messages</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <span class="text-sm text-gray-300">Handed over to IT Assist</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Additional Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4 mb-8 mt-6">
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">1️⃣ Unlock My Account</p>
+                        <p class="text-2xl font-bold text-white" id="tile1">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress1" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-unlock-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">2️⃣ Reset Email Password</p>
+                        <p class="text-2xl font-bold text-white" id="tile2">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress2" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-key"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">3️⃣ Request Google Backup Code</p>
+                        <p class="text-2xl font-bold text-white" id="tile3">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress3" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">4️⃣ Request VPN Access</p>
+                        <p class="text-2xl font-bold text-white" id="tile4">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress4" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">5️⃣ Newskies Password Reset</p>
+                        <p class="text-2xl font-bold text-white" id="tile5">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress5" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">6️⃣ Other Requests</p>
+                        <p class="text-2xl font-bold text-white" id="tile6">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress6" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">7️⃣ Report an Error</p>
+                        <p class="text-2xl font-bold text-white" id="tile7">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress7" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">8️⃣ Submit a New Service Request</p>
+                        <p class="text-2xl font-bold text-white" id="tile8">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress8" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-plus-square"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">9️⃣ Connect to a Live Agent</p>
+                        <p class="text-2xl font-bold text-white" id="tile9">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress9" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card card-black p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="metric-label text-xs mb-2">Free Text (not 1-9)</p>
+                        <p class="text-2xl font-bold text-white" id="tile10">-</p>
+                        <div class="tile-progress-container">
+                            <div class="tile-progress-bar progress-green" id="progress10" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="tile-icon flex-shrink-0 ml-3">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-8 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">AirAsia - Group ICT</p>
+        </div>
+    </footer>
+
+    <!-- Print Preview Modal -->
+    <div id="printModal" class="print-modal">
+        <div class="print-modal-content">
+            <div class="print-modal-header">
+                <div>
+                    <h2 class="text-xl font-bold">Print Preview</h2>
+                    <p class="text-sm text-gray-200 mt-1">Review, print, or save this dashboard.</p>
+                </div>
+                <div class="print-modal-actions-inline">
+                    <button id="savePdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition duration-300 flex items-center text-sm">
+                        <i class="fas fa-file-pdf mr-2"></i> Save as PDF
+                    </button>
+                    <button id="printBtn" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition duration-300 flex items-center text-sm">
+                        <i class="fas fa-print mr-2"></i> Print
+                    </button>
+                    <button id="closePrintModal" class="text-white hover:text-gray-300 text-2xl font-bold ml-1">&times;</button>
+                </div>
+            </div>
+            <div id="printPreviewContent" class="print-preview-content">
+                <!-- Content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let trafficChart = null;
+        let allMessages = [];
+
+        // Initialize empty chart
+        function initChart() {
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            
+            trafficChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Total Messages',
+                            data: [],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        },
+                        {
+                            label: 'Handed over to IT Assist',
+                            data: [],
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toLocaleString();
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false,
+                            grid: {
+                                color: 'rgba(51, 65, 85, 0.3)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11,
+                                    weight: '500'
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(51, 65, 85, 0.3)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11,
+                                    weight: '500'
+                                },
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Parse message from textPayload
+        function parseMessage(textPayload) {
+            if (!textPayload) return null;
+            
+            // For JSON format, textPayload is like: "[2025-11-27 06:18:48] 👤 Santha: helo"
+            // For CSV format (backward compatibility), it might have quotes: "'[2025-11-27 06:18:48] 👤 Santha: helo"'
+            // Remove leading single quote if present (for CSV compatibility)
+            let payload = textPayload.replace(/^'/, '');
+            
+            // Extract message part after ": " (colon followed by space)
+            // This matches patterns like: "[timestamp] 👤 Name: message"
+            const match = payload.match(/:\s*(.+)$/);
+            if (match) {
+                let message = match[1];
+                // Remove trailing quotes (both single and double) and trim
+                // Handle cases like "1"', "1"", "1'", " 1"', etc. (for CSV compatibility)
+                // Remove quotes from both ends to handle edge cases
+                message = message
+                    .trim()
+                    .replace(/^["']+/, '')  // Remove leading quotes
+                    .replace(/["']+$/, '')  // Remove trailing quotes
+                    .trim();
+                return message;
+            }
+            return null;
+        }
+
+        // Check if message is "handed over" (ends with "9")
+        function isHandedOver(message) {
+            if (!message) return false;
+            const trimmed = message.trim();
+            return trimmed === '9' || trimmed.endsWith(' 9');
+        }
+
+        // Get week label from date (Monday to Sunday)
+        function getWeekLabel(date) {
+            // Get Monday of the week
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+            const monday = new Date(d.setDate(diff));
+            
+            // Get Sunday of the week
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            // If same month
+            if (monday.getMonth() === sunday.getMonth()) {
+                return `${monthNames[monday.getMonth()]} ${monday.getDate()}-${sunday.getDate()}, ${monday.getFullYear()}`;
+            } else {
+                // Cross month boundary
+                return `${monthNames[monday.getMonth()]} ${monday.getDate()}-${monthNames[sunday.getMonth()]} ${sunday.getDate()}, ${monday.getFullYear()}`;
+            }
+        }
+        
+        // Get week key for grouping (YYYY-WW format)
+        function getWeekKey(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(d.setDate(diff));
+            
+            // Get week number
+            const startOfYear = new Date(monday.getFullYear(), 0, 1);
+            const days = Math.floor((monday - startOfYear) / (24 * 60 * 60 * 1000));
+            const weekNum = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+            
+            return `${monday.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                // Remove from DOM after animation
+                setTimeout(() => {
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                }, 300);
+            }
+        }
+
+        // Process JSON data with optimized chunked processing
+        function processJSONData(jsonData) {
+            showLoading();
+            
+            allMessages = [];
+            const intentCounts = {
+                tile1: 0, tile2: 0, tile3: 0, tile4: 0, tile5: 0,
+                tile6: 0, tile7: 0, tile8: 0, tile9: 0, tile10: 0
+            };
+            let minDate = null;
+            let maxDate = null;
+            
+            // Pre-compile regex for better performance
+            const intentRegex = /:\s*([1-9])\s*$/;
+            const colonSpaceRegex = /:\s*(.+)$/;
+            
+            // Process in chunks to avoid blocking UI
+            const CHUNK_SIZE = 1000; // Process 1000 records at a time
+            let currentIndex = 0;
+            
+            function processChunk() {
+                const endIndex = Math.min(currentIndex + CHUNK_SIZE, jsonData.length);
+                
+                for (let i = currentIndex; i < endIndex; i++) {
+                    const row = jsonData[i];
+                    const textPayload = row.textPayload;
+                    const timestamp = row.timestamp;
+                    
+                    if (!textPayload || !timestamp) continue;
+                    
+                    // Optimized timestamp parsing - no regex needed for JSON
+                    const date = new Date(timestamp);
+                    if (isNaN(date.getTime())) continue;
+                    
+                    // Update min/max dates
+                    if (!minDate || date < minDate) minDate = date;
+                    if (!maxDate || date > maxDate) maxDate = date;
+                    
+                    // Optimized intent extraction - single regex check
+                    const intentMatch = textPayload.match(intentRegex);
+                    if (intentMatch) {
+                        const num = parseInt(intentMatch[1]);
+                        if (num >= 1 && num <= 9) {
+                            intentCounts[`tile${num}`]++;
+                        } else {
+                            intentCounts.tile10++;
+                        }
+                    } else {
+                        intentCounts.tile10++;
+                    }
+                    
+                    // Optimized message parsing - extract directly
+                    const messageMatch = textPayload.match(colonSpaceRegex);
+                    if (messageMatch) {
+                        const message = messageMatch[1].trim().replace(/^["']+|["']+$/g, '');
+                        if (message) {
+                            allMessages.push({
+                                date: date,
+                                message: message,
+                                isHandedOver: message.trim() === '9' || message.trim().endsWith(' 9')
+                            });
+                        }
+                    }
+                }
+                
+                currentIndex = endIndex;
+                
+                // Update UI incrementally every 5 chunks for better UX
+                if (currentIndex % (CHUNK_SIZE * 5) === 0 || currentIndex >= jsonData.length) {
+                    updateUIIncremental(intentCounts, minDate, maxDate, currentIndex >= jsonData.length);
+                }
+                
+                // Continue processing if not done
+                if (currentIndex < jsonData.length) {
+                    requestAnimationFrame(processChunk);
+                } else {
+                    // Final update
+                    finalizeProcessing(intentCounts, minDate, maxDate);
+                }
+            }
+            
+            // Start processing
+            requestAnimationFrame(processChunk);
+        }
+        
+        // Update UI incrementally during processing
+        function updateUIIncremental(intentCounts, minDate, maxDate, isFinal) {
+            // Update date range
+            if (minDate && maxDate) {
+                const formatDate = (date) => {
+                    return date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                };
+                document.getElementById('dateFrom').textContent = formatDate(minDate);
+                document.getElementById('dateTo').textContent = formatDate(maxDate);
+            }
+            
+            // Update totals (approximate during processing)
+            const totalMessages = allMessages.length;
+            const handedOver = allMessages.filter(m => m.isHandedOver).length;
+            
+            document.getElementById('totalMessages').textContent = totalMessages.toLocaleString();
+            document.getElementById('handedOver').textContent = handedOver.toLocaleString();
+            
+            // Update intent tiles
+            document.getElementById('tile1').textContent = intentCounts.tile1.toLocaleString();
+            document.getElementById('tile2').textContent = intentCounts.tile2.toLocaleString();
+            document.getElementById('tile3').textContent = intentCounts.tile3.toLocaleString();
+            document.getElementById('tile4').textContent = intentCounts.tile4.toLocaleString();
+            document.getElementById('tile5').textContent = intentCounts.tile5.toLocaleString();
+            document.getElementById('tile6').textContent = intentCounts.tile6.toLocaleString();
+            document.getElementById('tile7').textContent = intentCounts.tile7.toLocaleString();
+            document.getElementById('tile8').textContent = intentCounts.tile8.toLocaleString();
+            document.getElementById('tile9').textContent = intentCounts.tile9.toLocaleString();
+            document.getElementById('tile10').textContent = intentCounts.tile10.toLocaleString();
+            
+            // Update progress bars
+            updateTileProgressBars(intentCounts, totalMessages);
+        }
+        
+        // Finalize processing with chart update
+        function finalizeProcessing(intentCounts, minDate, maxDate) {
+            // Final UI update
+            updateUIIncremental(intentCounts, minDate, maxDate, true);
+            
+            // Calculate weekly data and update chart
+            const weeklyData = calculateWeeklyData(allMessages);
+            updateTrafficChart(weeklyData);
+        }
+
+        // Update progress bars for tiles with color coding
+        function updateTileProgressBars(intentCounts, totalMessages) {
+            if (totalMessages === 0) {
+                // Reset all progress bars if no messages
+                for (let i = 1; i <= 10; i++) {
+                    const progressBar = document.getElementById(`progress${i}`);
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                        progressBar.className = 'tile-progress-bar progress-green';
+                    }
+                }
+                return;
+            }
+
+            const tileValues = [
+                intentCounts.tile1,
+                intentCounts.tile2,
+                intentCounts.tile3,
+                intentCounts.tile4,
+                intentCounts.tile5,
+                intentCounts.tile6,
+                intentCounts.tile7,
+                intentCounts.tile8,
+                intentCounts.tile9,
+                intentCounts.tile10
+            ];
+
+            // Update each progress bar
+            tileValues.forEach((value, index) => {
+                const tileNum = index + 1;
+                const progressBar = document.getElementById(`progress${tileNum}`);
+                
+                if (progressBar) {
+                    // Calculate percentage based on total messages
+                    const percentage = (value / totalMessages) * 100;
+                    
+                    // Determine color class based on percentage ranges
+                    let colorClass = 'progress-green'; // 0-25%
+                    if (percentage > 75) {
+                        colorClass = 'progress-red'; // 76-100%
+                    } else if (percentage > 25) {
+                        colorClass = 'progress-amber'; // 26-75%
+                    }
+                    
+                    // Update progress bar
+                    progressBar.style.width = `${percentage}%`;
+                    progressBar.className = `tile-progress-bar ${colorClass}`;
+                }
+            });
+        }
+
+        // Calculate weekly data (optimized)
+        function calculateWeeklyData(messages) {
+            const weeklyMap = new Map();
+            
+            // Process messages in a single pass
+            for (let i = 0; i < messages.length; i++) {
+                const msg = messages[i];
+                const weekKey = getWeekKey(msg.date);
+                
+                let weekData = weeklyMap.get(weekKey);
+                if (!weekData) {
+                    // Only calculate week label once per week
+                    weekData = {
+                        week: getWeekLabel(msg.date),
+                        weekKey: weekKey,
+                        totalMessages: 0,
+                        handedOver: 0
+                    };
+                    weeklyMap.set(weekKey, weekData);
+                }
+                
+                weekData.totalMessages++;
+                if (msg.isHandedOver) {
+                    weekData.handedOver++;
+                }
+            }
+            
+            // Convert to array and sort by week key
+            const weeklyArray = Array.from(weeklyMap.values());
+            weeklyArray.sort((a, b) => a.weekKey.localeCompare(b.weekKey));
+            
+            return weeklyArray;
+        }
+
+        // Update chart with new data
+        function updateTrafficChart(data) {
+            if (!trafficChart) return;
+            
+            trafficChart.data.labels = data.map(d => d.week);
+            trafficChart.data.datasets[0].data = data.map(d => d.totalMessages);
+            trafficChart.data.datasets[1].data = data.map(d => d.handedOver);
+            trafficChart.update('active');
+            
+            // Small delay to ensure chart is fully rendered before hiding loading
+            setTimeout(() => {
+                hideLoading();
+            }, 300);
+        }
+
+        // Load CSV from URL
+        function loadJSONFromURL(url) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(jsonData => {
+                    // JSON is already parsed, just return it
+                    return jsonData;
+                });
+        }
+
+        // Find and load the most recent JSON file
+        async function loadMostRecentJSON() {
+            const logsPath = './logs/';
+            const datePattern = 'downloaded-logs-';
+            const foundFiles = [];
+            
+            // First, try logs.json (common default file)
+            try {
+                await loadJSONFromURL(logsPath + 'logs.json');
+                foundFiles.push({ 
+                    name: 'logs.json', 
+                    url: logsPath + 'logs.json', 
+                    date: new Date(9999, 11, 31) // Give it highest priority
+                });
+            } catch (error) {
+                // logs.json doesn't exist, continue
+            }
+            
+            // Try to find files with date pattern
+            // Check recent dates first (most likely to have the latest file)
+            const today = new Date();
+            const commonTimes = ['000000', '060000', '120000', '134849', '180000', '231656', '235959'];
+            
+            // Check last 60 days, but prioritize recent dates
+            for (let i = 0; i < 60; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0].replace(/-/g, '');
+                
+                // Check common time patterns for this date
+                for (const time of commonTimes) {
+                    const filename = `${datePattern}${dateStr}-${time}.json`;
+                    const url = logsPath + filename;
+                    
+                    try {
+                        await loadJSONFromURL(url);
+                        // File exists, parse the date from filename
+                        const fileDate = new Date(
+                            parseInt(dateStr.substring(0, 4)),
+                            parseInt(dateStr.substring(4, 6)) - 1,
+                            parseInt(dateStr.substring(6, 8)),
+                            parseInt(time.substring(0, 2)),
+                            parseInt(time.substring(2, 4))
+                        );
+                        foundFiles.push({ name: filename, url: url, date: fileDate });
+                        
+                        // If we found a file from today or yesterday, we can stop checking older dates
+                        // (unless logs.json exists, which takes priority)
+                        if (i <= 1 && foundFiles.length > 0) {
+                            break;
+                        }
+                    } catch (error) {
+                        // File doesn't exist, continue
+                        continue;
+                    }
+                }
+                
+                // If we found files and checked recent dates, break early
+                if (foundFiles.length > 0 && i > 7) {
+                    break;
+                }
+            }
+            
+            // Sort by date (most recent first) and load the most recent
+            if (foundFiles.length > 0) {
+                foundFiles.sort((a, b) => b.date - a.date);
+                const mostRecent = foundFiles[0];
+                
+                try {
+                    const data = await loadJSONFromURL(mostRecent.url);
+                    console.log('Successfully loaded most recent JSON from:', mostRecent.name);
+                    processJSONData(data);
+                    return;
+                } catch (error) {
+                    console.log('Error loading most recent file:', error);
+                }
+            }
+            
+            // If no files found
+            console.log('Could not auto-load any JSON file. Please upload manually using the Upload JSON button.');
+            hideLoading();
+        }
+
+        // CSV Upload Handler
+        document.getElementById('jsonInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            showLoading();
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const jsonData = JSON.parse(event.target.result);
+                    processJSONData(jsonData);
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    hideLoading();
+                    alert('Error reading JSON file. Please check the file format.');
+                }
+            };
+            reader.onerror = function() {
+                console.error('Error reading file');
+                hideLoading();
+                alert('Error reading JSON file.');
+            };
+            reader.readAsText(file);
+        });
+
+        // Print Preview Functionality
+        function generatePrintPreview() {
+            const printContent = document.getElementById('printPreviewContent');
+            
+            // Get current data
+            const weeklyData = calculateWeeklyData(allMessages);
+            const totalMessages = allMessages.length;
+            const totalHandedOver = allMessages.filter(msg => msg.isHandedOver).length;
+            
+            // Get date range
+            let minDate = null;
+            let maxDate = null;
+            if (allMessages.length > 0) {
+                const dates = allMessages.map(msg => new Date(msg.date)).sort((a, b) => a - b);
+                minDate = dates[0];
+                maxDate = dates[dates.length - 1];
+            }
+            
+            // Get tile values
+            const tile1 = document.getElementById('tile1')?.textContent || '0';
+            const tile2 = document.getElementById('tile2')?.textContent || '0';
+            const tile3 = document.getElementById('tile3')?.textContent || '0';
+            const tile4 = document.getElementById('tile4')?.textContent || '0';
+            const tile5 = document.getElementById('tile5')?.textContent || '0';
+            const tile6 = document.getElementById('tile6')?.textContent || '0';
+            const tile7 = document.getElementById('tile7')?.textContent || '0';
+            const tile8 = document.getElementById('tile8')?.textContent || '0';
+            const tile9 = document.getElementById('tile9')?.textContent || '0';
+            const tile10 = document.getElementById('tile10')?.textContent || '0';
+            
+            // Format date range
+            const dateRangeStr = minDate && maxDate 
+                ? `${minDate.toLocaleDateString()} - ${maxDate.toLocaleDateString()}`
+                : 'N/A';
+            
+            // Create simple table-based print preview
+            printContent.innerHTML = `
+                <div style="padding: 20px; font-family: Arial, sans-serif; color: #000; background: #fff;">
+                    <h1 style="text-align: center; margin-bottom: 30px; font-size: 24px;">IT Assist Dashboard Report</h1>
+                    
+                    <!-- Summary Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Date Range</div>
+                            <div style="font-size: 18px; font-weight: bold;">${dateRangeStr}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Messages</div>
+                            <div style="font-size: 18px; font-weight: bold;">${totalMessages.toLocaleString()}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Handed over to IT Assist</div>
+                            <div style="font-size: 18px; font-weight: bold;">${totalHandedOver.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Traffic Report Table -->
+                    <h2 style="font-size: 20px; margin-bottom: 15px; margin-top: 30px;">Traffic Report</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 1px solid #ddd;">
+                        <thead>
+                            <tr style="background-color: #f5f5f5;">
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Week</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Total Messages</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Handed over to IT Assist</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${weeklyData.map(week => {
+                                const percentage = week.totalMessages > 0 
+                                    ? ((week.handedOver / week.totalMessages) * 100).toFixed(1) 
+                                    : '0.0';
+                                return `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${week.week}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${week.totalMessages.toLocaleString()}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${week.handedOver.toLocaleString()}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${percentage}%</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <!-- Tiles Grid -->
+                    <h2 style="font-size: 20px; margin-bottom: 15px; margin-top: 30px;">Intent Statistics</h2>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px;">
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 1</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile1}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 2</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile2}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 3</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile3}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 4</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile4}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 5</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile5}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 6</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile6}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 7</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile7}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 8</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile8}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 9</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile9}</div>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Intent 10</div>
+                            <div style="font-size: 20px; font-weight: bold;">${tile10}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Open print preview modal
+        document.getElementById('printPreviewBtn').addEventListener('click', function() {
+            generatePrintPreview();
+            document.getElementById('printModal').classList.add('active');
+            const navBar = document.querySelector('nav');
+            if (navBar) navBar.classList.add('hidden-nav');
+        });
+
+        // Close print preview modal
+        document.getElementById('closePrintModal').addEventListener('click', function() {
+            document.getElementById('printModal').classList.remove('active');
+            const navBar = document.querySelector('nav');
+            if (navBar) navBar.classList.remove('hidden-nav');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('printModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+                const navBar = document.querySelector('nav');
+                if (navBar) navBar.classList.remove('hidden-nav');
+            }
+        });
+
+        // Print functionality
+        document.getElementById('printBtn').addEventListener('click', function() {
+            const printContent = document.getElementById('printPreviewContent');
+            
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            
+            // Get the content HTML and escape it properly
+            const contentHTML = printContent.innerHTML;
+            
+            // Write the document structure
+            printWindow.document.open();
+            printWindow.document.write('<!DOCTYPE html>');
+            printWindow.document.write('<html>');
+            printWindow.document.write('<head>');
+            printWindow.document.write('<title>IT Assist Dashboard - Print</title>');
+            printWindow.document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { font-family: \'Noto Sans\', sans-serif; padding: 20px; background: white; color: #000; }');
+            printWindow.document.write('.metric-card { background: #f8f9fa; border: 1px solid #dee2e6; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; }');
+            printWindow.document.write('.card { background: white; border: 1px solid #dee2e6; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; }');
+            printWindow.document.write('h1, h2, h3 { color: #000; }');
+            printWindow.document.write('.metric-value { font-size: 2.5rem; font-weight: 700; color: #000; }');
+            printWindow.document.write('.tile-icon { background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); color: white; }');
+            printWindow.document.write('.tile-progress-container { background-color: #e5e7eb; }');
+            printWindow.document.write('.tile-progress-bar.progress-green { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }');
+            printWindow.document.write('.tile-progress-bar.progress-amber { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }');
+            printWindow.document.write('.tile-progress-bar.progress-red { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }');
+            printWindow.document.write('@media print { body { padding: 0; } .print-modal-actions { display: none; } }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head>');
+            printWindow.document.write('<body>');
+            printWindow.document.write(contentHTML);
+            printWindow.document.write('</body>');
+            printWindow.document.write('</html>');
+            printWindow.document.close();
+            
+            // Recreate chart in print window if needed
+            setTimeout(() => {
+                const printChartCanvas = printWindow.document.querySelector('#trafficChart');
+                if (printChartCanvas && trafficChart && trafficChart.data.labels.length > 0) {
+                    const printChartCtx = printChartCanvas.getContext('2d');
+                    new Chart(printChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: trafficChart.data.labels,
+                            datasets: [
+                                {
+                                    label: 'Total Messages',
+                                    data: trafficChart.data.datasets[0].data,
+                                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                },
+                                {
+                                    label: 'Handed over to IT Assist',
+                                    data: trafficChart.data.datasets[1].data,
+                                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                                    borderColor: 'rgba(239, 68, 68, 1)',
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                    ticks: { color: '#000' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                    ticks: { color: '#000' }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Wait a bit more for chart to render, then print
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
+            }, 250);
+        });
+
+        // Save as PDF functionality - Screenshot-based approach
+        document.getElementById('savePdfBtn').addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // Disable button and show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating PDF...';
+            
+            const printContent = document.getElementById('printPreviewContent');
+            
+            // Wait a moment for chart to fully render before taking screenshot
+            setTimeout(() => {
+                generatePDFFromScreenshot(printContent, btn, originalText);
+            }, 500);
+        });
+        
+        function generatePDFFromScreenshot(element, btn, originalText) {
+            // Check if html2canvas and jsPDF are available
+            if (typeof html2canvas === 'undefined') {
+                alert('html2canvas library not loaded. Please refresh the page and try again.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+            
+            // Get jsPDF constructor - handle UMD build which exposes it as window.jspdf.jsPDF
+            const JsPDF = window.jspdf?.jsPDF || window.jsPDF || jsPDF;
+            if (typeof JsPDF === 'undefined') {
+                alert('jsPDF library not loaded. Please refresh the page and try again.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+            
+            // Wait a moment for content to render (no canvas elements, so simpler)
+            setTimeout(() => {
+                // Configure html2canvas options
+                const canvasOptions = {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: false,
+                    backgroundColor: '#ffffff',
+                    width: element.scrollWidth,
+                    height: element.scrollHeight,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
+                };
+                
+                // Capture the element as a canvas/image
+                html2canvas(element, canvasOptions)
+                .then((canvas) => {
+                    // Convert canvas to image data
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    // Create PDF with A4 dimensions (in mm)
+                    const pdf = new JsPDF('portrait', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    
+                    // Calculate dimensions to fit the image in A4
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                    const finalWidth = imgWidth * ratio;
+                    const finalHeight = imgHeight * ratio;
+                    
+                    // Add image to PDF
+                    pdf.addImage(imgData, 'PNG', 0, 0, finalWidth, finalHeight);
+                    
+                    // Save the PDF
+                    pdf.save('it-assist-dashboard-report.pdf');
+                    
+                    // Re-enable button on success
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                })
+                .catch((error) => {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF: ' + (error.message || 'Unknown error. Please try again.'));
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+            }, 100);
+        }
+
+        // Initialize chart and load data on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            showLoading();
+            initChart();
+            
+            // Try to load the most recent JSON file
+            loadMostRecentJSON().catch(error => {
+                console.log('Auto-load failed:', error);
+                hideLoading();
+                // This is expected if running from file:// protocol
+                // User can still upload manually
+            });
+        });
+    </script>
+
+</body>
+</html>
